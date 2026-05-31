@@ -32,7 +32,7 @@
         toggle.addEventListener('click', function () {
             var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             applyTheme(next);
-            localStorage.setItem('vt-theme', next);
+            try { localStorage.setItem('vt-theme', next); } catch(e) {}
         });
     }
 

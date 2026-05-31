@@ -4,11 +4,13 @@
     var cfg = window.vtConsent || { cookieName: 'vt_consent', cookieDays: 365 };
 
     function setCookie(name, value, days) {
-        var exp = new Date(Date.now() + days * 864e5).toUTCString();
+        var exp    = new Date(Date.now() + days * 864e5).toUTCString();
+        var secure = window.location.protocol === 'https:' ? '; Secure' : '';
         document.cookie = name + '=' + encodeURIComponent(value)
             + '; expires=' + exp
             + '; path=/'
-            + '; SameSite=Lax';
+            + '; SameSite=Lax'
+            + secure;
     }
 
     function dismissBanner(banner) {

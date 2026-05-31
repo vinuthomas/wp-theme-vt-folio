@@ -2,3 +2,4 @@
 *.zip
 .env
 node_modules/
+security-reports/

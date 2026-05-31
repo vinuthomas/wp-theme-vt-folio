@@ -7,9 +7,11 @@
 <!-- Prevent flash of wrong theme -->
 <script>
 (function(){
-    var t = localStorage.getItem('vt-theme') ||
-            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', t);
+    try {
+        var t = localStorage.getItem('vt-theme') ||
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {}
 })();
 </script>
 <link rel="me" href="https://mastodon.online/@vinuthomas">
