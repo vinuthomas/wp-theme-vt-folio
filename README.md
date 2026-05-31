@@ -23,9 +23,17 @@ A custom WordPress theme for a personal tech/AI blog. No build step — pure PHP
 
 ## Installation
 
+**Option A — Download from GitHub Releases (easiest)**
+
+1. Go to the [Releases page](https://github.com/vinuthomas/wp-theme-vt-folio/releases/latest) and download `vinu-thomas-theme.zip`
+2. In your WordPress admin go to **Appearance → Themes → Add New → Upload Theme**
+3. Upload the zip and click **Activate**
+
+**Option B — Manual**
+
 Copy this folder into `wp-content/themes/vinu-thomas/` then activate via **Appearance → Themes**.
 
-No npm, no compilation.
+No npm, no compilation required for either option.
 
 ## Local development
 
