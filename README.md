@@ -2,6 +2,8 @@
 
 A custom WordPress theme for a personal tech/AI blog. No build step — pure PHP and CSS.
 
+> **Heads up:** This theme is built for and tested only on [vinuthomas.com](https://vinuthomas.com). It works well there, but your mileage may vary on other setups. If you find a bug or want to suggest an improvement, open an Issue or send a PR — both are welcome.
+
 ## Features
 
 - **Dark mode** — system-preference aware, toggled via header button, no flash on load
