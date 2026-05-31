@@ -43,9 +43,12 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
     <div class="container">
         <div class="site-header__inner">
 
-            <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" rel="home">
+            <a href="<?php echo esc_url(home_url('/')); ?>"
+               class="site-logo"
+               rel="home"
+               aria-label="<?php echo esc_attr( get_bloginfo('name') ); ?>">
                 <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo-dark.png'); ?>"
-                     alt="<?php echo esc_attr( get_bloginfo('name') ); ?>"
+                     alt=""
                      class="site-logo__img site-logo__img--light"
                      height="48" width="130">
                 <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo-light.png'); ?>"
