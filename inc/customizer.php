@@ -147,24 +147,24 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
 
     /* — Panel ---------------------------------------------------- */
     $wp_customize->add_panel('vt_appearance', [
-        'title'    => __('Theme Appearance', 'vinu-thomas'),
+        'title'    => __('Theme Appearance', 'vt-folio'),
         'priority' => 25,
     ]);
 
     /* — Colors: Light Mode --------------------------------------- */
     $wp_customize->add_section('vt_colors_light', [
-        'title'       => __('Colors — Light Mode', 'vinu-thomas'),
-        'description' => __('Colors used when light mode is active.', 'vinu-thomas'),
+        'title'       => __('Colors — Light Mode', 'vt-folio'),
+        'description' => __('Colors used when light mode is active.', 'vt-folio'),
         'panel'       => 'vt_appearance',
         'priority'    => 10,
     ]);
 
     $light_colors = [
-        'vt_accent'         => ['default' => '#c8853a', 'label' => __('Accent',              'vinu-thomas')],
-        'vt_bg'             => ['default' => '#ffffff', 'label' => __('Background',           'vinu-thomas')],
-        'vt_bg_secondary'   => ['default' => '#f7f6f4', 'label' => __('Secondary Background', 'vinu-thomas')],
-        'vt_text_primary'   => ['default' => '#1a1a1a', 'label' => __('Primary Text',         'vinu-thomas')],
-        'vt_text_secondary' => ['default' => '#555555', 'label' => __('Secondary Text',       'vinu-thomas')],
+        'vt_accent'         => ['default' => '#c8853a', 'label' => __('Accent',              'vt-folio')],
+        'vt_bg'             => ['default' => '#ffffff', 'label' => __('Background',           'vt-folio')],
+        'vt_bg_secondary'   => ['default' => '#f7f6f4', 'label' => __('Secondary Background', 'vt-folio')],
+        'vt_text_primary'   => ['default' => '#1a1a1a', 'label' => __('Primary Text',         'vt-folio')],
+        'vt_text_secondary' => ['default' => '#555555', 'label' => __('Secondary Text',       'vt-folio')],
     ];
 
     foreach ($light_colors as $id => $config) {
@@ -181,17 +181,17 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
 
     /* — Colors: Dark Mode ---------------------------------------- */
     $wp_customize->add_section('vt_colors_dark', [
-        'title'       => __('Colors — Dark Mode', 'vinu-thomas'),
-        'description' => __('Colors used when dark mode is active.', 'vinu-thomas'),
+        'title'       => __('Colors — Dark Mode', 'vt-folio'),
+        'description' => __('Colors used when dark mode is active.', 'vt-folio'),
         'panel'       => 'vt_appearance',
         'priority'    => 20,
     ]);
 
     $dark_colors = [
-        'vt_dark_bg'            => ['default' => '#111111', 'label' => __('Background',           'vinu-thomas')],
-        'vt_dark_bg_secondary'  => ['default' => '#1c1c1c', 'label' => __('Secondary Background', 'vinu-thomas')],
-        'vt_dark_text_primary'  => ['default' => '#f0ece6', 'label' => __('Primary Text',         'vinu-thomas')],
-        'vt_dark_text_secondary'=> ['default' => '#b0a898', 'label' => __('Secondary Text',       'vinu-thomas')],
+        'vt_dark_bg'            => ['default' => '#111111', 'label' => __('Background',           'vt-folio')],
+        'vt_dark_bg_secondary'  => ['default' => '#1c1c1c', 'label' => __('Secondary Background', 'vt-folio')],
+        'vt_dark_text_primary'  => ['default' => '#f0ece6', 'label' => __('Primary Text',         'vt-folio')],
+        'vt_dark_text_secondary'=> ['default' => '#b0a898', 'label' => __('Secondary Text',       'vt-folio')],
     ];
 
     foreach ($dark_colors as $id => $config) {
@@ -208,25 +208,25 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
 
     /* — Typography ---------------------------------------------- */
     $wp_customize->add_section('vt_typography', [
-        'title'       => __('Typography', 'vinu-thomas'),
-        'description' => __('Google Fonts loaded on every page are updated automatically.', 'vinu-thomas'),
+        'title'       => __('Typography', 'vt-folio'),
+        'description' => __('Google Fonts loaded on every page are updated automatically.', 'vt-folio'),
         'panel'       => 'vt_appearance',
         'priority'    => 30,
     ]);
 
     $font_groups = [
         'vt_font_heading' => [
-            'label'   => __('Heading Font', 'vinu-thomas'),
+            'label'   => __('Heading Font', 'vt-folio'),
             'default' => 'Playfair Display',
             'map'     => VT_HEADING_FONTS,
         ],
         'vt_font_body' => [
-            'label'   => __('Body Font', 'vinu-thomas'),
+            'label'   => __('Body Font', 'vt-folio'),
             'default' => 'Inter',
             'map'     => VT_BODY_FONTS,
         ],
         'vt_font_logo' => [
-            'label'   => __('Logo / Accent Font', 'vinu-thomas'),
+            'label'   => __('Logo / Accent Font', 'vt-folio'),
             'default' => 'Dancing Script',
             'map'     => VT_LOGO_FONTS,
         ],
@@ -250,14 +250,14 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
 
     /* — Post Display -------------------------------------------- */
     $wp_customize->add_section('vt_display', [
-        'title'    => __('Post Display', 'vinu-thomas'),
+        'title'    => __('Post Display', 'vt-folio'),
         'panel'    => 'vt_appearance',
         'priority' => 40,
     ]);
 
     $display_settings = [
-        'vt_show_reading_time' => __('Show reading time', 'vinu-thomas'),
-        'vt_show_date'         => __('Show publish date', 'vinu-thomas'),
+        'vt_show_reading_time' => __('Show reading time', 'vt-folio'),
+        'vt_show_date'         => __('Show publish date', 'vt-folio'),
     ];
 
     foreach ($display_settings as $id => $label) {
@@ -274,8 +274,8 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
 
     /* — Cookie Consent ------------------------------------------ */
     $wp_customize->add_section('vt_consent', [
-        'title'       => __('Cookie Consent', 'vinu-thomas'),
-        'description' => __('GDPR/UK GDPR banner for EU/EEA visitors. Geo-detected via the Cloudflare CF-IPCountry header (free tier). Add analytics providers via the vt_consent_providers filter.', 'vinu-thomas'),
+        'title'       => __('Cookie Consent', 'vt-folio'),
+        'description' => __('GDPR/UK GDPR banner for EU/EEA visitors. Geo-detected via the Cloudflare CF-IPCountry header (free tier). Add analytics providers via the vt_consent_providers filter.', 'vt-folio'),
         'panel'       => 'vt_appearance',
         'priority'    => 50,
     ]);
@@ -285,7 +285,7 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
     $wp_customize->add_control('vt_consent_enabled', [
-        'label'   => __('Enable cookie consent banner', 'vinu-thomas'),
+        'label'   => __('Enable cookie consent banner', 'vt-folio'),
         'section' => 'vt_consent',
         'type'    => 'checkbox',
     ]);
@@ -295,8 +295,8 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
     $wp_customize->add_control('vt_consent_geo_only', [
-        'label'       => __('Only show to EU/EEA visitors', 'vinu-thomas'),
-        'description' => __('Requires Cloudflare in front of the site. Uncheck to show the banner to all visitors regardless of location.', 'vinu-thomas'),
+        'label'       => __('Only show to EU/EEA visitors', 'vt-folio'),
+        'description' => __('Requires Cloudflare in front of the site. Uncheck to show the banner to all visitors regardless of location.', 'vt-folio'),
         'section'     => 'vt_consent',
         'type'        => 'checkbox',
     ]);
@@ -306,18 +306,18 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
     $wp_customize->add_control('vt_consent_force_show', [
-        'label'       => __('Always show banner (testing mode)', 'vinu-thomas'),
-        'description' => __('Bypasses geo detection and ignores any stored consent cookie. Turn off before going live.', 'vinu-thomas'),
+        'label'       => __('Always show banner (testing mode)', 'vt-folio'),
+        'description' => __('Bypasses geo detection and ignores any stored consent cookie. Turn off before going live.', 'vt-folio'),
         'section'     => 'vt_consent',
         'type'        => 'checkbox',
     ]);
 
     $wp_customize->add_setting('vt_consent_text', [
-        'default'           => __('This site uses analytics cookies to understand how posts are being read. No personal data is sold or shared.', 'vinu-thomas'),
+        'default'           => __('This site uses analytics cookies to understand how posts are being read. No personal data is sold or shared.', 'vt-folio'),
         'sanitize_callback' => 'sanitize_textarea_field',
     ]);
     $wp_customize->add_control('vt_consent_text', [
-        'label'   => __('Banner message', 'vinu-thomas'),
+        'label'   => __('Banner message', 'vt-folio'),
         'section' => 'vt_consent',
         'type'    => 'textarea',
     ]);
@@ -327,8 +327,8 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'esc_url_raw',
     ]);
     $wp_customize->add_control('vt_consent_policy_url', [
-        'label'       => __('Privacy policy URL', 'vinu-thomas'),
-        'description' => __('Optional. Leave blank to use the WordPress Privacy Policy page if one is set.', 'vinu-thomas'),
+        'label'       => __('Privacy policy URL', 'vt-folio'),
+        'description' => __('Optional. Leave blank to use the WordPress Privacy Policy page if one is set.', 'vt-folio'),
         'section'     => 'vt_consent',
         'type'        => 'url',
     ]);

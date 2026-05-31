@@ -1,4 +1,4 @@
-# Vinu Thomas — WordPress Theme
+# VT Folio — WordPress Theme
 
 A custom WordPress theme for a personal tech/AI blog. No build step — pure PHP and CSS.
 

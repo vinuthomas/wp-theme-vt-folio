@@ -32,8 +32,8 @@ function vt_setup(): void {
     add_image_size('vt-hero',     1920, 800, true);
 
     register_nav_menus([
-        'primary' => __('Primary Navigation', 'vinu-thomas'),
-        'footer'  => __('Footer Navigation',  'vinu-thomas'),
+        'primary' => __('Primary Navigation', 'vt-folio'),
+        'footer'  => __('Footer Navigation',  'vt-folio'),
     ]);
 
     add_editor_style('style.css');
@@ -173,7 +173,7 @@ function vt_comment(WP_Comment $comment, array $args, int $depth): void {
         <footer class="reply">
             <?php
             comment_reply_link(array_merge($args, [
-                'reply_text' => __('Reply', 'vinu-thomas'),
+                'reply_text' => __('Reply', 'vt-folio'),
                 'depth'      => $depth,
                 'max_depth'  => $args['max_depth'] ?? 5,
             ]));
@@ -271,9 +271,9 @@ add_action( 'wp_head', 'vt_article_schema' );
 
 function vt_widgets_init(): void {
     register_sidebar([
-        'name'          => __('Single Post Sidebar', 'vinu-thomas'),
+        'name'          => __('Single Post Sidebar', 'vt-folio'),
         'id'            => 'single-post-sidebar',
-        'description'   => __('Appears beside single posts on wide screens (≥1380px).', 'vinu-thomas'),
+        'description'   => __('Appears beside single posts on wide screens (≥1380px).', 'vt-folio'),
         'before_widget' => '<div id="%1$s" class="sidebar-widget %2$s">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3 class="sidebar-widget__title">',

@@ -11,7 +11,7 @@ if (post_password_required()) return;
         $count = get_comments_number();
         echo esc_html(
             sprintf(
-                _n('%s comment', '%s comments', $count, 'vinu-thomas'),
+                _n('%s comment', '%s comments', $count, 'vt-folio'),
                 number_format_i18n($count)
             )
         );
@@ -30,16 +30,16 @@ if (post_password_required()) return;
     </ol>
 
     <?php the_comments_pagination([
-        'prev_text' => '<span aria-hidden="true">&larr;</span><span class="screen-reader-text">' . __('Previous comments', 'vinu-thomas') . '</span>',
-        'next_text' => '<span aria-hidden="true">&rarr;</span><span class="screen-reader-text">' . __('Next comments', 'vinu-thomas') . '</span>',
+        'prev_text' => '<span aria-hidden="true">&larr;</span><span class="screen-reader-text">' . __('Previous comments', 'vt-folio') . '</span>',
+        'next_text' => '<span aria-hidden="true">&rarr;</span><span class="screen-reader-text">' . __('Next comments', 'vt-folio') . '</span>',
     ]); ?>
 
     <?php endif; ?>
 
     <?php
     comment_form([
-        'title_reply'   => __('Leave a comment', 'vinu-thomas'),
-        'label_submit'  => __('Post comment',    'vinu-thomas'),
+        'title_reply'   => __('Leave a comment', 'vt-folio'),
+        'label_submit'  => __('Post comment',    'vt-folio'),
         'comment_notes_before' => '',
     ]);
     ?>

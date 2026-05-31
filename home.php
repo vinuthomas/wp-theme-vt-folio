@@ -20,8 +20,8 @@
         <?php
         the_posts_pagination([
             'mid_size'  => 2,
-            'prev_text' => '<span aria-hidden="true">&larr;</span><span class="screen-reader-text">' . __('Previous page', 'vinu-thomas') . '</span>',
-            'next_text' => '<span aria-hidden="true">&rarr;</span><span class="screen-reader-text">' . __('Next page', 'vinu-thomas') . '</span>',
+            'prev_text' => '<span aria-hidden="true">&larr;</span><span class="screen-reader-text">' . __('Previous page', 'vt-folio') . '</span>',
+            'next_text' => '<span aria-hidden="true">&rarr;</span><span class="screen-reader-text">' . __('Next page', 'vt-folio') . '</span>',
         ]);
         ?>
 

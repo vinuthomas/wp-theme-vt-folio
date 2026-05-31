@@ -3,12 +3,12 @@
 <div class="container">
     <div class="error-404">
         <div class="error-404__number" aria-hidden="true">404</div>
-        <h1 class="error-404__title"><?php esc_html_e( 'Well, this is embarrassing.', 'vinu-thomas' ); ?></h1>
+        <h1 class="error-404__title"><?php esc_html_e( 'Well, this is embarrassing.', 'vt-folio' ); ?></h1>
         <p class="error-404__text">
-            <?php esc_html_e( "This page never existed, was quietly removed, or got deleted during one of those 'aggressive clean-ups' we always regret by Tuesday. Either way — it's gone, and it's not coming back.", 'vinu-thomas' ); ?>
+            <?php esc_html_e( "This page never existed, was quietly removed, or got deleted during one of those 'aggressive clean-ups' we always regret by Tuesday. Either way — it's gone, and it's not coming back.", 'vt-folio' ); ?>
         </p>
         <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="btn btn--primary">
-            <?php esc_html_e( 'Back to home', 'vinu-thomas' ); ?>
+            <?php esc_html_e( 'Back to home', 'vt-folio' ); ?>
         </a>
     </div>
 
@@ -39,7 +39,7 @@
 
         if ( $suggestions->have_posts() ) : ?>
         <div class="error-404__suggestions">
-            <h2 class="error-404__suggestions-title"><?php esc_html_e( 'Did you mean one of these?', 'vinu-thomas' ); ?></h2>
+            <h2 class="error-404__suggestions-title"><?php esc_html_e( 'Did you mean one of these?', 'vt-folio' ); ?></h2>
             <div class="posts-grid">
                 <?php while ( $suggestions->have_posts() ) : $suggestions->the_post(); ?>
                     <?php get_template_part( 'template-parts/content', 'card' ); ?>

@@ -42,7 +42,8 @@
       "WebFetch(domain:unsplash.com)",
       "Bash(php -l /Users/vinuthomas/code/wordpress_theme/inc/cookie-consent.php)",
       "Bash(php -l /Users/vinuthomas/code/wordpress_theme/inc/customizer.php)",
-      "Bash(php -l /Users/vinuthomas/code/wordpress_theme/functions.php)"
+      "Bash(php -l /Users/vinuthomas/code/wordpress_theme/functions.php)",
+      "Bash(xargs sed -i '' \"s/'vinu-thomas'/'vt-folio'/g\")"
     ]
   }
 }

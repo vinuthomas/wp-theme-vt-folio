@@ -1,4 +1,4 @@
-# Changelog
+# VT Folio — Changelog
 
 All notable changes to this theme are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).

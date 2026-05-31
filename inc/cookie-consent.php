@@ -161,7 +161,7 @@ function vt_consent_enqueue(): void {
 function vt_consent_render_banner(): void {
     $text = vt_get_mod(
         'vt_consent_text',
-        __('This site uses analytics cookies to understand how posts are being read. No personal data is sold or shared.', 'vinu-thomas')
+        __('This site uses analytics cookies to understand how posts are being read. No personal data is sold or shared.', 'vt-folio')
     );
 
     $policy_url = vt_get_mod('vt_consent_policy_url', '');
@@ -172,7 +172,7 @@ function vt_consent_render_banner(): void {
     <div id="vt-cookie-banner"
          class="vt-cookie-banner"
          role="region"
-         aria-label="<?php esc_attr_e('Cookie consent', 'vinu-thomas'); ?>"
+         aria-label="<?php esc_attr_e('Cookie consent', 'vt-folio'); ?>"
          aria-live="polite">
         <div class="vt-cookie-banner__inner">
             <p class="vt-cookie-banner__text">
@@ -181,19 +181,19 @@ function vt_consent_render_banner(): void {
                     <a href="<?php echo esc_url($policy_url); ?>"
                        class="vt-cookie-banner__policy"
                        target="_blank"
-                       rel="noopener noreferrer"><?php esc_html_e('Privacy policy', 'vinu-thomas'); ?></a>
+                       rel="noopener noreferrer"><?php esc_html_e('Privacy policy', 'vt-folio'); ?></a>
                 <?php endif; ?>
             </p>
             <div class="vt-cookie-banner__actions">
                 <button id="vt-consent-reject"
                         class="vt-cookie-btn vt-cookie-btn--ghost"
                         type="button">
-                    <?php esc_html_e('Reject non-essential', 'vinu-thomas'); ?>
+                    <?php esc_html_e('Reject non-essential', 'vt-folio'); ?>
                 </button>
                 <button id="vt-consent-accept"
                         class="vt-cookie-btn vt-cookie-btn--primary"
                         type="button">
-                    <?php esc_html_e('Accept all', 'vinu-thomas'); ?>
+                    <?php esc_html_e('Accept all', 'vt-folio'); ?>
                 </button>
             </div>
         </div>

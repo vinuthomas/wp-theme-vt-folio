@@ -28,7 +28,7 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<a class="skip-link" href="#main"><?php esc_html_e('Skip to content', 'vinu-thomas'); ?></a>
+<a class="skip-link" href="#main"><?php esc_html_e('Skip to content', 'vt-folio'); ?></a>
 
 <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
 
@@ -49,7 +49,7 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
                      height="48" width="130">
             </a>
 
-            <nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e('Primary navigation', 'vinu-thomas'); ?>">
+            <nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e('Primary navigation', 'vt-folio'); ?>">
                 <?php
                 wp_nav_menu([
                     'theme_location' => 'primary',
@@ -65,14 +65,14 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
             <div class="header-actions">
                 <button class="header-btn" id="search-toggle"
                         aria-expanded="false" aria-controls="search-overlay"
-                        aria-label="<?php esc_attr_e('Open search', 'vinu-thomas'); ?>">
+                        aria-label="<?php esc_attr_e('Open search', 'vt-folio'); ?>">
                     <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                     </svg>
                 </button>
 
                 <button class="header-btn" id="theme-toggle"
-                        aria-label="<?php esc_attr_e('Switch to dark mode', 'vinu-thomas'); ?>"
+                        aria-label="<?php esc_attr_e('Switch to dark mode', 'vt-folio'); ?>"
                         aria-pressed="false">
                     <svg class="icon-sun" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
@@ -84,7 +84,7 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
 
                 <button class="menu-toggle header-btn" id="menu-toggle"
                         aria-expanded="false" aria-controls="primary-menu"
-                        aria-label="<?php esc_attr_e('Open menu', 'vinu-thomas'); ?>">
+                        aria-label="<?php esc_attr_e('Open menu', 'vt-folio'); ?>">
                     <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
                 </button>
             </div>
@@ -92,19 +92,19 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
         </div>
     </div>
 
-    <div class="search-overlay" id="search-overlay" aria-hidden="true" aria-label="<?php esc_attr_e('Site search', 'vinu-thomas'); ?>">
+    <div class="search-overlay" id="search-overlay" aria-hidden="true" aria-label="<?php esc_attr_e('Site search', 'vt-folio'); ?>">
         <form role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>" class="search-overlay__form">
-            <label for="search-overlay-input" class="screen-reader-text"><?php esc_html_e('Search posts', 'vinu-thomas'); ?></label>
+            <label for="search-overlay-input" class="screen-reader-text"><?php esc_html_e('Search posts', 'vt-folio'); ?></label>
             <input type="search" name="s" id="search-overlay-input" class="search-overlay__input"
-                   placeholder="<?php esc_attr_e('Search posts…', 'vinu-thomas'); ?>"
+                   placeholder="<?php esc_attr_e('Search posts…', 'vt-folio'); ?>"
                    value="<?php echo esc_attr(get_search_query()); ?>"
                    autocomplete="off">
-            <button type="submit" class="search-overlay__btn" aria-label="<?php esc_attr_e('Submit search', 'vinu-thomas'); ?>">
+            <button type="submit" class="search-overlay__btn" aria-label="<?php esc_attr_e('Submit search', 'vt-folio'); ?>">
                 <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                 </svg>
             </button>
-            <button type="button" class="search-overlay__btn" id="search-close" aria-label="<?php esc_attr_e('Close search', 'vinu-thomas'); ?>">
+            <button type="button" class="search-overlay__btn" id="search-close" aria-label="<?php esc_attr_e('Close search', 'vt-folio'); ?>">
                 <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
