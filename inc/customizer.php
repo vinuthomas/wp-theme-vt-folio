@@ -1,0 +1,336 @@
+<?php
+
+defined('ABSPATH') || exit;
+
+/* ----------------------------------------------------------------
+   Font definitions
+   ---------------------------------------------------------------- */
+
+const VT_HEADING_FONTS = [
+    'Playfair Display'   => ['gf' => 'Playfair+Display:ital,wght@0,700;1,400',   'stack' => 'Georgia, serif'],
+    'Merriweather'       => ['gf' => 'Merriweather:ital,wght@0,700;1,400',        'stack' => 'Georgia, serif'],
+    'Lora'               => ['gf' => 'Lora:ital,wght@0,700;1,400',                'stack' => 'Georgia, serif'],
+    'Cormorant Garamond' => ['gf' => 'Cormorant+Garamond:ital,wght@0,700;1,400',  'stack' => 'Georgia, serif'],
+    'Libre Baskerville'  => ['gf' => 'Libre+Baskerville:ital,wght@0,700;1,400',   'stack' => 'Georgia, serif'],
+    'DM Serif Display'   => ['gf' => 'DM+Serif+Display:ital,wght@0,400;1,400',    'stack' => 'Georgia, serif'],
+    'EB Garamond'        => ['gf' => 'EB+Garamond:ital,wght@0,700;1,400',         'stack' => 'Georgia, serif'],
+];
+
+const VT_BODY_FONTS = [
+    'Inter'         => ['gf' => 'Inter:wght@400;500;600',          'stack' => '-apple-system, BlinkMacSystemFont, sans-serif'],
+    'Roboto'        => ['gf' => 'Roboto:wght@400;500;700',         'stack' => 'Arial, sans-serif'],
+    'Open Sans'     => ['gf' => 'Open+Sans:wght@400;500;600',      'stack' => 'Arial, sans-serif'],
+    'Source Sans 3' => ['gf' => 'Source+Sans+3:wght@400;500;600',  'stack' => 'Arial, sans-serif'],
+    'Nunito'        => ['gf' => 'Nunito:wght@400;500;600',         'stack' => 'Arial, sans-serif'],
+    'Lato'          => ['gf' => 'Lato:wght@400;700',               'stack' => 'Arial, sans-serif'],
+    'IBM Plex Sans' => ['gf' => 'IBM+Plex+Sans:wght@400;500;600',  'stack' => 'Arial, sans-serif'],
+    'DM Sans'       => ['gf' => 'DM+Sans:wght@400;500;600',        'stack' => 'Arial, sans-serif'],
+];
+
+const VT_LOGO_FONTS = [
+    'Dancing Script' => ['gf' => 'Dancing+Script:wght@600', 'stack' => 'cursive'],
+    'Pacifico'       => ['gf' => 'Pacifico',                 'stack' => 'cursive'],
+    'Caveat'         => ['gf' => 'Caveat:wght@600',          'stack' => 'cursive'],
+    'Satisfy'        => ['gf' => 'Satisfy',                  'stack' => 'cursive'],
+    'Great Vibes'    => ['gf' => 'Great+Vibes',              'stack' => 'cursive'],
+];
+
+/* ----------------------------------------------------------------
+   Google Fonts URL — called from vt_enqueue() in functions.php
+   ---------------------------------------------------------------- */
+
+function vt_google_fonts_url(): string {
+    $h = vt_get_mod('vt_font_heading', 'Playfair Display');
+    $b = vt_get_mod('vt_font_body',    'Inter');
+    $l = vt_get_mod('vt_font_logo',    'Dancing Script');
+
+    $families = array_unique([
+        VT_HEADING_FONTS[$h]['gf'] ?? VT_HEADING_FONTS['Playfair Display']['gf'],
+        VT_BODY_FONTS[$b]['gf']    ?? VT_BODY_FONTS['Inter']['gf'],
+        VT_LOGO_FONTS[$l]['gf']    ?? VT_LOGO_FONTS['Dancing Script']['gf'],
+    ]);
+
+    return 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $families) . '&display=swap';
+}
+
+/* ----------------------------------------------------------------
+   Color helpers
+   ---------------------------------------------------------------- */
+
+function vt_hex_to_rgb(string $hex): array {
+    $hex = ltrim($hex, '#');
+    if (strlen($hex) === 3) {
+        $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+    }
+    return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
+}
+
+function vt_darken_hex(string $hex, float $amount): string {
+    [$r, $g, $b] = vt_hex_to_rgb($hex);
+    return sprintf('#%02x%02x%02x',
+        max(0, (int) round($r * (1 - $amount))),
+        max(0, (int) round($g * (1 - $amount))),
+        max(0, (int) round($b * (1 - $amount)))
+    );
+}
+
+function vt_lighten_hex(string $hex, float $amount): string {
+    [$r, $g, $b] = vt_hex_to_rgb($hex);
+    return sprintf('#%02x%02x%02x',
+        min(255, (int) round($r + (255 - $r) * $amount)),
+        min(255, (int) round($g + (255 - $g) * $amount)),
+        min(255, (int) round($b + (255 - $b) * $amount))
+    );
+}
+
+/* ----------------------------------------------------------------
+   Inline CSS — overrides :root variables from customizer values
+   ---------------------------------------------------------------- */
+
+function vt_custom_css(): void {
+    $accent     = vt_get_mod('vt_accent',              '#c8853a');
+    $bg         = vt_get_mod('vt_bg',                  '#ffffff');
+    $bg2        = vt_get_mod('vt_bg_secondary',        '#f7f6f4');
+    $text1      = vt_get_mod('vt_text_primary',        '#1a1a1a');
+    $text2      = vt_get_mod('vt_text_secondary',      '#555555');
+    $dark_bg    = vt_get_mod('vt_dark_bg',             '#111111');
+    $dark_bg2   = vt_get_mod('vt_dark_bg_secondary',   '#1c1c1c');
+    $dark_text1 = vt_get_mod('vt_dark_text_primary',   '#f0ece6');
+    $dark_text2 = vt_get_mod('vt_dark_text_secondary', '#b0a898');
+
+    [$r, $g, $b]  = vt_hex_to_rgb($accent);
+    $accent_hover = vt_darken_hex($accent, 0.17);
+    $accent_light = "rgba($r,$g,$b,0.10)";
+    $accent_text  = vt_darken_hex($accent, 0.08);
+    $accent_dark  = vt_lighten_hex($accent, 0.25);
+
+    $h_name  = vt_get_mod('vt_font_heading', 'Playfair Display');
+    $b_name  = vt_get_mod('vt_font_body',    'Inter');
+    $l_name  = vt_get_mod('vt_font_logo',    'Dancing Script');
+    $h_stack = VT_HEADING_FONTS[$h_name]['stack'] ?? 'Georgia, serif';
+    $b_stack = VT_BODY_FONTS[$b_name]['stack']    ?? 'sans-serif';
+    $l_stack = VT_LOGO_FONTS[$l_name]['stack']    ?? 'cursive';
+
+    $css  = ":root{";
+    $css .= "--accent:{$accent};";
+    $css .= "--accent-hover:{$accent_hover};";
+    $css .= "--accent-text:{$accent_text};";
+    $css .= "--accent-light:{$accent_light};";
+    $css .= "--bg:{$bg};";
+    $css .= "--bg-secondary:{$bg2};";
+    $css .= "--bg-card:{$bg};";
+    $css .= "--text-primary:{$text1};";
+    $css .= "--text-secondary:{$text2};";
+    $css .= "--font-heading:'{$h_name}',{$h_stack};";
+    $css .= "--font-body:'{$b_name}',{$b_stack};";
+    $css .= "--font-accent:'{$l_name}',{$l_stack};";
+    $css .= "}";
+
+    $css .= "[data-theme=\"dark\"]{";
+    $css .= "--bg:{$dark_bg};";
+    $css .= "--bg-secondary:{$dark_bg2};";
+    $css .= "--bg-card:{$dark_bg2};";
+    $css .= "--text-primary:{$dark_text1};";
+    $css .= "--text-secondary:{$dark_text2};";
+    $css .= "--accent-text:{$accent_dark};";
+    $css .= "}";
+
+    wp_add_inline_style('vt-style', $css);
+}
+add_action('wp_enqueue_scripts', 'vt_custom_css', 20);
+
+/* ----------------------------------------------------------------
+   Customizer registration
+   ---------------------------------------------------------------- */
+
+function vt_customizer(WP_Customize_Manager $wp_customize): void {
+
+    /* — Panel ---------------------------------------------------- */
+    $wp_customize->add_panel('vt_appearance', [
+        'title'    => __('Theme Appearance', 'vinu-thomas'),
+        'priority' => 25,
+    ]);
+
+    /* — Colors: Light Mode --------------------------------------- */
+    $wp_customize->add_section('vt_colors_light', [
+        'title'       => __('Colors — Light Mode', 'vinu-thomas'),
+        'description' => __('Colors used when light mode is active.', 'vinu-thomas'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 10,
+    ]);
+
+    $light_colors = [
+        'vt_accent'         => ['default' => '#c8853a', 'label' => __('Accent',              'vinu-thomas')],
+        'vt_bg'             => ['default' => '#ffffff', 'label' => __('Background',           'vinu-thomas')],
+        'vt_bg_secondary'   => ['default' => '#f7f6f4', 'label' => __('Secondary Background', 'vinu-thomas')],
+        'vt_text_primary'   => ['default' => '#1a1a1a', 'label' => __('Primary Text',         'vinu-thomas')],
+        'vt_text_secondary' => ['default' => '#555555', 'label' => __('Secondary Text',       'vinu-thomas')],
+    ];
+
+    foreach ($light_colors as $id => $config) {
+        $wp_customize->add_setting($id, [
+            'default'           => $config['default'],
+            'sanitize_callback' => 'sanitize_hex_color',
+            'transport'         => 'refresh',
+        ]);
+        $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, $id, [
+            'label'   => $config['label'],
+            'section' => 'vt_colors_light',
+        ]));
+    }
+
+    /* — Colors: Dark Mode ---------------------------------------- */
+    $wp_customize->add_section('vt_colors_dark', [
+        'title'       => __('Colors — Dark Mode', 'vinu-thomas'),
+        'description' => __('Colors used when dark mode is active.', 'vinu-thomas'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 20,
+    ]);
+
+    $dark_colors = [
+        'vt_dark_bg'            => ['default' => '#111111', 'label' => __('Background',           'vinu-thomas')],
+        'vt_dark_bg_secondary'  => ['default' => '#1c1c1c', 'label' => __('Secondary Background', 'vinu-thomas')],
+        'vt_dark_text_primary'  => ['default' => '#f0ece6', 'label' => __('Primary Text',         'vinu-thomas')],
+        'vt_dark_text_secondary'=> ['default' => '#b0a898', 'label' => __('Secondary Text',       'vinu-thomas')],
+    ];
+
+    foreach ($dark_colors as $id => $config) {
+        $wp_customize->add_setting($id, [
+            'default'           => $config['default'],
+            'sanitize_callback' => 'sanitize_hex_color',
+            'transport'         => 'refresh',
+        ]);
+        $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, $id, [
+            'label'   => $config['label'],
+            'section' => 'vt_colors_dark',
+        ]));
+    }
+
+    /* — Typography ---------------------------------------------- */
+    $wp_customize->add_section('vt_typography', [
+        'title'       => __('Typography', 'vinu-thomas'),
+        'description' => __('Google Fonts loaded on every page are updated automatically.', 'vinu-thomas'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 30,
+    ]);
+
+    $font_groups = [
+        'vt_font_heading' => [
+            'label'   => __('Heading Font', 'vinu-thomas'),
+            'default' => 'Playfair Display',
+            'map'     => VT_HEADING_FONTS,
+        ],
+        'vt_font_body' => [
+            'label'   => __('Body Font', 'vinu-thomas'),
+            'default' => 'Inter',
+            'map'     => VT_BODY_FONTS,
+        ],
+        'vt_font_logo' => [
+            'label'   => __('Logo / Accent Font', 'vinu-thomas'),
+            'default' => 'Dancing Script',
+            'map'     => VT_LOGO_FONTS,
+        ],
+    ];
+
+    foreach ($font_groups as $id => $config) {
+        $choices = array_combine(array_keys($config['map']), array_keys($config['map']));
+        $default = $config['default'];
+        $wp_customize->add_setting($id, [
+            'default'           => $default,
+            'sanitize_callback' => fn($v) => array_key_exists($v, $choices) ? $v : $default,
+            'transport'         => 'refresh',
+        ]);
+        $wp_customize->add_control($id, [
+            'label'   => $config['label'],
+            'section' => 'vt_typography',
+            'type'    => 'select',
+            'choices' => $choices,
+        ]);
+    }
+
+    /* — Post Display -------------------------------------------- */
+    $wp_customize->add_section('vt_display', [
+        'title'    => __('Post Display', 'vinu-thomas'),
+        'panel'    => 'vt_appearance',
+        'priority' => 40,
+    ]);
+
+    $display_settings = [
+        'vt_show_reading_time' => __('Show reading time', 'vinu-thomas'),
+        'vt_show_date'         => __('Show publish date', 'vinu-thomas'),
+    ];
+
+    foreach ($display_settings as $id => $label) {
+        $wp_customize->add_setting($id, [
+            'default'           => true,
+            'sanitize_callback' => 'rest_sanitize_boolean',
+        ]);
+        $wp_customize->add_control($id, [
+            'label'   => $label,
+            'section' => 'vt_display',
+            'type'    => 'checkbox',
+        ]);
+    }
+
+    /* — Cookie Consent ------------------------------------------ */
+    $wp_customize->add_section('vt_consent', [
+        'title'       => __('Cookie Consent', 'vinu-thomas'),
+        'description' => __('GDPR/UK GDPR banner for EU/EEA visitors. Geo-detected via the Cloudflare CF-IPCountry header (free tier). Add analytics providers via the vt_consent_providers filter.', 'vinu-thomas'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 50,
+    ]);
+
+    $wp_customize->add_setting('vt_consent_enabled', [
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    $wp_customize->add_control('vt_consent_enabled', [
+        'label'   => __('Enable cookie consent banner', 'vinu-thomas'),
+        'section' => 'vt_consent',
+        'type'    => 'checkbox',
+    ]);
+
+    $wp_customize->add_setting('vt_consent_geo_only', [
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    $wp_customize->add_control('vt_consent_geo_only', [
+        'label'       => __('Only show to EU/EEA visitors', 'vinu-thomas'),
+        'description' => __('Requires Cloudflare in front of the site. Uncheck to show the banner to all visitors regardless of location.', 'vinu-thomas'),
+        'section'     => 'vt_consent',
+        'type'        => 'checkbox',
+    ]);
+
+    $wp_customize->add_setting('vt_consent_force_show', [
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    $wp_customize->add_control('vt_consent_force_show', [
+        'label'       => __('Always show banner (testing mode)', 'vinu-thomas'),
+        'description' => __('Bypasses geo detection and ignores any stored consent cookie. Turn off before going live.', 'vinu-thomas'),
+        'section'     => 'vt_consent',
+        'type'        => 'checkbox',
+    ]);
+
+    $wp_customize->add_setting('vt_consent_text', [
+        'default'           => __('This site uses analytics cookies to understand how posts are being read. No personal data is sold or shared.', 'vinu-thomas'),
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ]);
+    $wp_customize->add_control('vt_consent_text', [
+        'label'   => __('Banner message', 'vinu-thomas'),
+        'section' => 'vt_consent',
+        'type'    => 'textarea',
+    ]);
+
+    $wp_customize->add_setting('vt_consent_policy_url', [
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control('vt_consent_policy_url', [
+        'label'       => __('Privacy policy URL', 'vinu-thomas'),
+        'description' => __('Optional. Leave blank to use the WordPress Privacy Policy page if one is set.', 'vinu-thomas'),
+        'section'     => 'vt_consent',
+        'type'        => 'url',
+    ]);
+}
+add_action('customize_register', 'vt_customizer');
