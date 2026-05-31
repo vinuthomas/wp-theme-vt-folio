@@ -2,7 +2,7 @@
 
 A custom WordPress theme for a personal tech/AI blog. No build step — pure PHP and CSS.
 
-> **Heads up:** This theme is built for and tested only on [vinuthomas.com](https://vinuthomas.com). It works well there, but your mileage may vary on other setups. If you find a bug or want to suggest an improvement, open an Issue or send a PR — both are welcome.
+> **Heads up:** This theme is built for and tested only on a single personal blog. It works well there, but your mileage may vary on other setups. If you find a bug or want to suggest an improvement, open an Issue or send a PR — both are welcome.
 
 ## Features
 
@@ -23,33 +23,20 @@ A custom WordPress theme for a personal tech/AI blog. No build step — pure PHP
 
 ## Installation
 
-Copy the `wordpress_theme/` folder into `wp-content/themes/vinu-thomas/` then activate via **Appearance → Themes**.
+Copy this folder into `wp-content/themes/vinu-thomas/` then activate via **Appearance → Themes**.
 
 No npm, no compilation.
 
 ## Local development
 
-Docker Compose is used for local development. The theme folder is symlinked into the container so edits are live instantly.
-
-```bash
-# Start
-cd /path/to/vinuthomas-local && docker compose up -d
-
-# Stop
-docker compose down
-```
-
-Site runs at `http://localhost:8080`.
+Any local WordPress environment works (Docker Compose, Lando, LocalWP, MAMP, etc.). Symlink or copy the theme folder into `wp-content/themes/vinu-thomas/` and activate it. Edits are reflected on the next page load with no compilation step.
 
 ## Packaging a release
 
 **Always bump the version in `style.css` first** (line 7). Use semantic versioning: patch for fixes, minor for new features.
 
 ```bash
-rm -f ~/Desktop/vinu-thomas-theme.zip
-cp -r /path/to/wordpress_theme /tmp/vinu-thomas
-rm -f /tmp/vinu-thomas/CLAUDE.md
-rm -rf /tmp/vinu-thomas/.claude
+cp -r /path/to/theme /tmp/vinu-thomas
 cd /tmp && zip -r ~/Desktop/vinu-thomas-theme.zip vinu-thomas --exclude "*/.DS_Store"
 rm -rf /tmp/vinu-thomas
 ```
