@@ -91,6 +91,8 @@ rm -f ~/Desktop/vinu-thomas-theme.zip
 cp -r /Users/vinuthomas/code/wordpress_theme /tmp/vinu-thomas
 rm -f /tmp/vinu-thomas/CLAUDE.md
 rm -rf /tmp/vinu-thomas/.claude
+rm -rf /tmp/vinu-thomas/.git
+rm -rf /tmp/vinu-thomas/security-reports
 cd /tmp && zip -r ~/Desktop/vinu-thomas-theme.zip vinu-thomas --exclude "*/.DS_Store"
 rm -rf /tmp/vinu-thomas
 ```
