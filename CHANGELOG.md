@@ -6,6 +6,22 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.6.0] — 2026-05-31
+
+### Added
+- Block editor colour palette and font families now sync automatically with Customizer values via `wp_theme_json_data_theme` filter — changing accent colour or fonts in Customizer updates the block editor in real time
+- Post Display: reading progress bar toggle (`vt_show_progress_bar`)
+- Post Display: featured first post toggle (`vt_show_featured_post`)
+- Post Display: footer credit text setting (`vt_footer_credit`, replaces hardcoded "All rights reserved.")
+
+### Fixed
+- Logo links (`a.site-logo`, `a.footer-logo`) now carry `aria-label` with the site name; both logo images marked decorative (`alt=""`). Previously the dark-mode logo had no accessible name, failing the Lighthouse discernible link text audit.
+
+### Changed
+- README installation instructions updated to highlight GitHub Releases zip as the primary install method
+
+---
+
 ## [1.5.0] — 2026-05-31
 
 ### Added
