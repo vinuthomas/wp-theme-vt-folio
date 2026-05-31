@@ -29,11 +29,11 @@
             <?php endif; ?>
 
             <?php
-            $vt_url_x          = vt_get_mod('vt_social_x',          'https://x.com/vinuthomas');
-            $vt_url_linkedin   = vt_get_mod('vt_social_linkedin',   'https://linkedin.com/in/vinuthomas');
-            $vt_url_instagram  = vt_get_mod('vt_social_instagram',  'https://www.instagram.com/vinuthomas');
-            $vt_url_soundcloud = vt_get_mod('vt_social_soundcloud', 'https://soundcloud.com/vinuthomas');
-            $vt_url_mastodon   = vt_get_mod('vt_social_mastodon',   'https://mastodon.online/@vinuthomas');
+            $vt_url_x          = vt_get_mod('vt_social_x',          '');
+            $vt_url_linkedin   = vt_get_mod('vt_social_linkedin',   '');
+            $vt_url_instagram  = vt_get_mod('vt_social_instagram',  '');
+            $vt_url_soundcloud = vt_get_mod('vt_social_soundcloud', '');
+            $vt_url_mastodon   = vt_get_mod('vt_social_mastodon',   '');
             $vt_has_social     = $vt_url_x || $vt_url_linkedin || $vt_url_instagram || $vt_url_soundcloud || $vt_url_mastodon;
             ?>
             <?php if ($vt_has_social) : ?>
