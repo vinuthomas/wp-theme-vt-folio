@@ -77,7 +77,11 @@
             <?php endif; ?>
 
             <p class="footer-copy">
-                &copy; <?php echo esc_html(gmdate('Y')); ?> <?php echo esc_html( get_bloginfo('name') ); ?>. All rights reserved.
+                &copy; <?php echo esc_html(gmdate('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>.
+                <?php
+                $credit = vt_get_mod('vt_footer_credit', __('All rights reserved.', 'vt-folio'));
+                if ($credit) echo esc_html($credit);
+                ?>
             </p>
 
         </div>

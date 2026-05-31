@@ -272,6 +272,37 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         ]);
     }
 
+    $wp_customize->add_setting('vt_show_progress_bar', [
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    $wp_customize->add_control('vt_show_progress_bar', [
+        'label'   => __('Show reading progress bar', 'vt-folio'),
+        'section' => 'vt_display',
+        'type'    => 'checkbox',
+    ]);
+
+    $wp_customize->add_setting('vt_show_featured_post', [
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    $wp_customize->add_control('vt_show_featured_post', [
+        'label'       => __('Featured first post on blog listing', 'vt-folio'),
+        'description' => __('Makes the first post full-width with a side-by-side image layout.', 'vt-folio'),
+        'section'     => 'vt_display',
+        'type'        => 'checkbox',
+    ]);
+
+    $wp_customize->add_setting('vt_footer_credit', [
+        'default'           => __('All rights reserved.', 'vt-folio'),
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('vt_footer_credit', [
+        'label'   => __('Footer credit text', 'vt-folio'),
+        'section' => 'vt_display',
+        'type'    => 'text',
+    ]);
+
     /* — Social Links -------------------------------------------- */
     $wp_customize->add_section('vt_social', [
         'title'    => __('Social Links', 'vt-folio'),
@@ -380,3 +411,61 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
     ]);
 }
 add_action('customize_register', 'vt_customizer');
+
+/* ----------------------------------------------------------------
+   Sync Customizer values into the block editor palette + typography
+   wp_theme_json_data_theme fires whenever WP resolves theme.json,
+   including the block editor and frontend block styles.
+   ---------------------------------------------------------------- */
+
+add_filter('wp_theme_json_data_theme', function (WP_Theme_JSON_Data $theme_json): WP_Theme_JSON_Data {
+    $accent = vt_get_mod('vt_accent',       '#c8853a');
+    $bg     = vt_get_mod('vt_bg',           '#ffffff');
+    $bg2    = vt_get_mod('vt_bg_secondary', '#f7f6f4');
+    $text   = vt_get_mod('vt_text_primary', '#1a1a1a');
+
+    $h_name  = vt_get_mod('vt_font_heading', 'Playfair Display');
+    $b_name  = vt_get_mod('vt_font_body',    'Inter');
+    $h_stack = VT_HEADING_FONTS[$h_name]['stack'] ?? 'Georgia, serif';
+    $b_stack = VT_BODY_FONTS[$b_name]['stack']    ?? 'sans-serif';
+
+    $theme_json->update_with([
+        'version'  => 2,
+        'settings' => [
+            'color' => [
+                'palette' => [
+                    ['name' => 'Accent',     'slug' => 'accent',     'color' => $accent],
+                    ['name' => 'Background', 'slug' => 'background', 'color' => $bg],
+                    ['name' => 'Surface',    'slug' => 'surface',    'color' => $bg2],
+                    ['name' => 'Text',       'slug' => 'text',       'color' => $text],
+                    ['name' => 'Muted',      'slug' => 'muted',      'color' => '#888888'],
+                ],
+            ],
+            'typography' => [
+                'fontFamilies' => [
+                    [
+                        'fontFamily' => "'{$h_name}', {$h_stack}",
+                        'name'       => $h_name,
+                        'slug'       => 'heading',
+                    ],
+                    [
+                        'fontFamily' => "'{$b_name}', {$b_stack}",
+                        'name'       => $b_name,
+                        'slug'       => 'body',
+                    ],
+                ],
+            ],
+        ],
+        'styles' => [
+            'color' => [
+                'background' => $bg,
+                'text'       => $text,
+            ],
+            'typography' => [
+                'fontFamily' => "'{$b_name}', {$b_stack}",
+            ],
+        ],
+    ]);
+
+    return $theme_json;
+});

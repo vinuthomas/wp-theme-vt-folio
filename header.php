@@ -33,7 +33,9 @@ echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
 
 <a class="skip-link" href="#main"><?php esc_html_e('Skip to content', 'vt-folio'); ?></a>
 
+<?php if (vt_get_mod('vt_show_progress_bar', true)) : ?>
 <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+<?php endif; ?>
 
 <div class="site-wrapper">
 

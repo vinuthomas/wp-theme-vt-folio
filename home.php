@@ -8,11 +8,12 @@
 
         <div class="posts-grid">
             <?php
-            $count = 0;
+            $count           = 0;
+            $show_featured   = vt_get_mod('vt_show_featured_post', true);
             while (have_posts()) :
                 the_post();
                 $count++;
-                get_template_part('template-parts/content', 'card', ['is_featured' => $count === 1]);
+                get_template_part('template-parts/content', 'card', ['is_featured' => $show_featured && $count === 1]);
             endwhile;
             ?>
         </div>
