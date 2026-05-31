@@ -14,7 +14,8 @@
     } catch(e) {}
 })();
 </script>
-<link rel="me" href="https://mastodon.online/@vinuthomas">
+<?php $vt_mastodon_url = vt_get_mod('vt_social_mastodon', 'https://mastodon.online/@vinuthomas'); ?>
+<?php if ($vt_mastodon_url) : ?><link rel="me" href="<?php echo esc_url($vt_mastodon_url); ?>"><?php endif; ?>
 <?php
 /*
  * Preload the above-fold logo image so the browser fetches it at high

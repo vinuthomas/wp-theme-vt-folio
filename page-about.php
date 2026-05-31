@@ -18,7 +18,12 @@ get_header();
             <div class="container">
                 <div class="about-hero__identity">
                     <div class="about-hero__avatar">
-                        <?php echo get_avatar(get_option('admin_email'), 160, '', 'Vinu Thomas'); ?>
+                        <?php
+                        $vt_avatar_email = vt_get_mod('vt_about_avatar_email', get_option('admin_email'));
+                        if ($vt_avatar_email) {
+                            echo get_avatar(sanitize_email($vt_avatar_email), 160, '', esc_attr(get_bloginfo('name')));
+                        }
+                        ?>
                     </div>
                     <h1 class="about-hero__label">
                         <?php echo esc_html(has_excerpt() ? get_the_excerpt() : get_the_title()); ?>

@@ -272,6 +272,52 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         ]);
     }
 
+    /* — Social Links -------------------------------------------- */
+    $wp_customize->add_section('vt_social', [
+        'title'    => __('Social Links', 'vt-folio'),
+        'panel'    => 'vt_appearance',
+        'priority' => 45,
+    ]);
+
+    $vt_social_fields = [
+        'vt_social_x'          => ['label' => __('X / Twitter URL', 'vt-folio'),  'default' => 'https://x.com/vinuthomas'],
+        'vt_social_linkedin'   => ['label' => __('LinkedIn URL',    'vt-folio'),  'default' => 'https://linkedin.com/in/vinuthomas'],
+        'vt_social_instagram'  => ['label' => __('Instagram URL',   'vt-folio'),  'default' => 'https://www.instagram.com/vinuthomas'],
+        'vt_social_soundcloud' => ['label' => __('SoundCloud URL',  'vt-folio'),  'default' => 'https://soundcloud.com/vinuthomas'],
+        'vt_social_mastodon'   => ['label' => __('Mastodon URL',    'vt-folio'),  'default' => 'https://mastodon.online/@vinuthomas'],
+    ];
+
+    foreach ($vt_social_fields as $id => $config) {
+        $wp_customize->add_setting($id, [
+            'default'           => $config['default'],
+            'sanitize_callback' => 'esc_url_raw',
+        ]);
+        $wp_customize->add_control($id, [
+            'label'   => $config['label'],
+            'section' => 'vt_social',
+            'type'    => 'url',
+        ]);
+    }
+
+    /* — About Page ---------------------------------------------- */
+    $wp_customize->add_section('vt_about', [
+        'title'       => __('About Page', 'vt-folio'),
+        'description' => __('Settings for the About page template.', 'vt-folio'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 47,
+    ]);
+
+    $wp_customize->add_setting('vt_about_avatar_email', [
+        'default'           => get_option('admin_email'),
+        'sanitize_callback' => 'sanitize_email',
+    ]);
+    $wp_customize->add_control('vt_about_avatar_email', [
+        'label'       => __('Avatar email address', 'vt-folio'),
+        'description' => __('Email used to load the Gravatar on the About page. Leave blank to hide the avatar.', 'vt-folio'),
+        'section'     => 'vt_about',
+        'type'        => 'email',
+    ]);
+
     /* — Cookie Consent ------------------------------------------ */
     $wp_customize->add_section('vt_consent', [
         'title'       => __('Cookie Consent', 'vt-folio'),
