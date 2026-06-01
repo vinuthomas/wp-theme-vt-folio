@@ -100,6 +100,33 @@ function vt_consent_disable_jetpack_stats(): void {
 }
 
 /* ----------------------------------------------------------------
+   Geo REST endpoint — /wp-json/vt/v1/geo
+   Always dynamic: /wp-json/ is excluded from Jetpack HTML cache,
+   WP Super Cache, W3TC, and most other cache engines by default.
+   Returns { "eu": true|false } with no-store headers so Cloudflare
+   and browsers never cache it either.
+   ---------------------------------------------------------------- */
+
+add_action('rest_api_init', function () {
+    register_rest_route('vt/v1', '/geo', [
+        'methods'             => 'GET',
+        'callback'            => 'vt_consent_geo_rest',
+        'permission_callback' => '__return_true',
+    ]);
+});
+
+function vt_consent_geo_rest(): WP_REST_Response {
+    $force_show = (bool) vt_get_mod('vt_consent_force_show', false);
+    $geo_only   = vt_get_mod('vt_consent_geo_only', true);
+    $eu         = $force_show || ($geo_only ? vt_consent_is_eu() : true);
+
+    $response = new WP_REST_Response(['eu' => $eu], 200);
+    $response->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+    $response->header('Pragma', 'no-cache');
+    return $response;
+}
+
+/* ----------------------------------------------------------------
    Bootstrap — runs at init
    ---------------------------------------------------------------- */
 
@@ -107,17 +134,15 @@ function vt_consent_init(): void {
     if (!vt_get_mod('vt_consent_enabled', true)) return;
 
     $force_show = (bool) vt_get_mod('vt_consent_force_show', false);
+    $consent    = $force_show ? null : vt_consent_value();
 
+    // Disable providers when consent is absent or denied.
+    // Geo check still applies here so non-EU visitors (on uncached pages)
+    // never have their providers blocked unnecessarily.
     $geo_only = vt_get_mod('vt_consent_geo_only', true);
     $in_scope = $force_show || ($geo_only ? vt_consent_is_eu() : true);
 
-    if (!$in_scope) return;
-
-    // In force-show mode ignore any stored cookie so the banner always appears
-    $consent = $force_show ? null : vt_consent_value();
-
-    // Block all providers while consent is absent or denied
-    if ($consent !== 'granted') {
+    if ($in_scope && $consent !== 'granted') {
         foreach (vt_consent_providers() as $provider) {
             if (!empty($provider['disable']) && is_callable($provider['disable'])) {
                 call_user_func($provider['disable']);
@@ -125,7 +150,9 @@ function vt_consent_init(): void {
         }
     }
 
-    // Show banner when no decision has been recorded (or force-show overrides it)
+    // Always render the banner HTML when no decision is recorded.
+    // Geo-gating is handled client-side via the /wp-json/vt/v1/geo endpoint
+    // so it works correctly even when this page is served from an HTML cache.
     if ($consent === null) {
         add_action('wp_enqueue_scripts', 'vt_consent_enqueue');
         add_action('wp_footer', 'vt_consent_render_banner', 100);
@@ -149,8 +176,9 @@ function vt_consent_enqueue(): void {
     );
 
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
-        'cookieName' => VT_CONSENT_COOKIE,
-        'cookieDays' => VT_CONSENT_DAYS,
+        'cookieName'  => VT_CONSENT_COOKIE,
+        'cookieDays'  => VT_CONSENT_DAYS,
+        'geoEndpoint' => rest_url('vt/v1/geo'),
     ]);
 }
 
@@ -173,7 +201,8 @@ function vt_consent_render_banner(): void {
          class="vt-cookie-banner"
          role="region"
          aria-label="<?php esc_attr_e('Cookie consent', 'vt-folio'); ?>"
-         aria-live="polite">
+         aria-live="polite"
+         hidden>
         <div class="vt-cookie-banner__inner">
             <p class="vt-cookie-banner__text">
                 <?php echo esc_html($text); ?>
