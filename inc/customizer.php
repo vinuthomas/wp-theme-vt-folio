@@ -39,18 +39,24 @@ const VT_LOGO_FONTS = [
    Google Fonts URL — called from vt_enqueue() in functions.php
    ---------------------------------------------------------------- */
 
-function vt_google_fonts_url(): string {
+function vt_google_fonts_url( bool $include_logo = false ): string {
     $h = vt_get_mod('vt_font_heading', 'Playfair Display');
     $b = vt_get_mod('vt_font_body',    'Inter');
-    $l = vt_get_mod('vt_font_logo',    'Dancing Script');
 
-    $families = array_unique([
+    $families = [
         VT_HEADING_FONTS[$h]['gf'] ?? VT_HEADING_FONTS['Playfair Display']['gf'],
         VT_BODY_FONTS[$b]['gf']    ?? VT_BODY_FONTS['Inter']['gf'],
-        VT_LOGO_FONTS[$l]['gf']    ?? VT_LOGO_FONTS['Dancing Script']['gf'],
-    ]);
+    ];
 
-    return 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $families) . '&display=swap';
+    // Logo font is only needed on About and 404 — skip it on every other page.
+    if ( $include_logo ) {
+        $l          = vt_get_mod('vt_font_logo', 'Dancing Script');
+        $families[] = VT_LOGO_FONTS[$l]['gf'] ?? VT_LOGO_FONTS['Dancing Script']['gf'];
+    }
+
+    return 'https://fonts.googleapis.com/css2?family='
+        . implode('&family=', array_unique($families))
+        . '&display=swap';
 }
 
 /* ----------------------------------------------------------------

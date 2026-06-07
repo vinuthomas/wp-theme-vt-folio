@@ -47,7 +47,10 @@ add_action('after_setup_theme', 'vt_setup');
 function vt_enqueue(): void {
     $ver = wp_get_theme()->get('Version');
 
-    wp_enqueue_style('vt-fonts', vt_google_fonts_url(), [], null);
+    // Include the logo font only on pages that actually render it
+    // (About page template and 404) to avoid a wasted font fetch everywhere else.
+    $include_logo = is_404() || is_page_template('page-about.php');
+    wp_enqueue_style('vt-fonts', vt_google_fonts_url( $include_logo ), [], null);
 
     wp_enqueue_style('vt-style', get_stylesheet_uri(), ['vt-fonts'], $ver);
 
@@ -58,6 +61,30 @@ function vt_enqueue(): void {
     }
 }
 add_action('wp_enqueue_scripts', 'vt_enqueue');
+
+/* ----------------------------------------------------------------
+   Remove wp-emoji — this site uses standard Unicode emoji and
+   doesn't need WordPress's SVG polyfill loader (~6KB inline script
+   + styles injected on every page).
+   ---------------------------------------------------------------- */
+
+add_action('init', function (): void {
+    remove_action('wp_head',              'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles',      'print_emoji_styles');
+    remove_action('admin_print_scripts',  'print_emoji_detection_script');
+    remove_action('admin_print_styles',   'print_emoji_styles');
+    remove_filter('the_content_feed',     'wp_staticize_emoji');
+    remove_filter('comment_text_rss',     'wp_staticize_emoji');
+    remove_filter('wp_mail',              'wp_staticize_emoji_for_email');
+    add_filter('emoji_svg_url',           '__return_false');
+});
+
+/* ----------------------------------------------------------------
+   Load per-block CSS separately so only the styles for blocks
+   actually used on a given page are shipped.
+   ---------------------------------------------------------------- */
+
+add_filter('should_load_separate_core_block_assets', '__return_true');
 
 /**
  * Inject preconnect hints for Google Fonts before wp_head() outputs anything
@@ -82,7 +109,11 @@ add_action('wp_head', function (): void {
  */
 function vt_async_google_fonts(string $tag, string $handle): string {
     if ('vt-fonts' !== $handle) return $tag;
-    $url = esc_url(vt_google_fonts_url());
+    // Extract the href from the tag WordPress already built so the URL matches
+    // exactly what was enqueued (which varies by page via $include_logo).
+    preg_match("/href='([^']+)'/", $tag, $m);
+    if (!$m) return $tag;
+    $url = esc_url($m[1]);
     return '<link rel="preload" href="' . $url . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n"
          . '<noscript><link rel="stylesheet" href="' . $url . '"></noscript>' . "\n";
 }

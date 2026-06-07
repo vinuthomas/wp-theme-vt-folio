@@ -18,13 +18,15 @@
 <?php if ($vt_mastodon_url) : ?><link rel="me" href="<?php echo esc_url($vt_mastodon_url); ?>"><?php endif; ?>
 <?php
 /*
- * Preload the above-fold logo image so the browser fetches it at high
- * priority during the initial HTML parse, before the stylesheet is applied.
- * Only the light-mode logo is preloaded because it is visible on first paint
- * for the majority of visitors; dark-mode is toggled client-side at runtime.
+ * Preload the light-mode logo on pages where it won't compete with an LCP
+ * post image (i.e. not on single posts/pages which have a hero image).
+ * Light logo is preloaded because light mode is the default on first paint;
+ * dark mode is applied client-side after the FOUC-prevention script runs.
  */
-$logo_url = esc_url( get_template_directory_uri() . '/assets/images/logo-dark.png' );
-echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
+if ( ! is_singular() ) :
+    $logo_url = esc_url( get_template_directory_uri() . '/assets/images/logo-light.png' );
+    echo '<link rel="preload" as="image" href="' . $logo_url . '">' . "\n";
+endif;
 ?>
 <?php wp_head(); ?>
 </head>
