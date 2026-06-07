@@ -183,6 +183,18 @@ function vt_the_categories(string $style = 'plain'): void {
 }
 
 /* ----------------------------------------------------------------
+   Cache-Control header — tell upstream proxies not to rely on the
+   origin header (Jetpack sends max-age=172800). Cloudflare already
+   ignores it via the Cache Rule, but this keeps the origin clean.
+   ---------------------------------------------------------------- */
+
+add_action('send_headers', function (): void {
+    if (!is_user_logged_in()) {
+        header('Cache-Control: no-store');
+    }
+});
+
+/* ----------------------------------------------------------------
    Custom comment template
    ---------------------------------------------------------------- */
 
