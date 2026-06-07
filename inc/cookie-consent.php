@@ -84,14 +84,16 @@ function vt_consent_providers(): array {
 }
 
 /* ----------------------------------------------------------------
-   Jetpack Stats — always dequeue the JS; let cookie-consent.js
-   inject it dynamically when consent is granted or visitor is non-EU.
-   Running at priority 99 ensures it fires after Jetpack enqueues.
+   Jetpack Stats — suppress the script tag at print time via
+   script_loader_tag rather than wp_dequeue_script. Dequeue loses
+   the priority race against Jetpack's Script Strategy API; filtering
+   the tag fires after all enqueue/dequeue battles are settled.
+   cookie-consent.js injects the script dynamically when appropriate.
    ---------------------------------------------------------------- */
 
-add_action('wp_enqueue_scripts', static function () {
-    wp_dequeue_script('jetpack-stats');
-}, 99);
+add_filter('script_loader_tag', static function (string $tag, string $handle): string {
+    return $handle === 'jetpack-stats' ? '' : $tag;
+}, 10, 2);
 
 /* ----------------------------------------------------------------
    Geo REST endpoint — /wp-json/vt/v1/geo
@@ -158,8 +160,6 @@ add_action('init', 'vt_consent_init');
    ---------------------------------------------------------------- */
 
 function vt_consent_enqueue(): void {
-    global $wp_scripts;
-
     $ver = wp_get_theme()->get('Version');
 
     wp_enqueue_script(
@@ -170,10 +170,10 @@ function vt_consent_enqueue(): void {
         true
     );
 
-    // Read the Jetpack Stats src from the registered (not queued) scripts.
-    // It is always registered by Jetpack even though we dequeue it at priority 99.
-    // Running at priority 50 means Jetpack has registered it before we read here.
-    $stats_src = $wp_scripts->registered['jetpack-stats']->src ?? '';
+    // Jetpack Stats uses a weekly-versioned URL: stats.wp.com/e-{ISO year}{ISO week}.js
+    // Derived from the date rather than reading wp_scripts->registered, which is
+    // unreliable because Jetpack's Script Strategy API enqueues after our priority 50.
+    $stats_src = 'https://stats.wp.com/e-' . gmdate( 'oW' ) . '.js';
 
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
         'cookieName'  => VT_CONSENT_COOKIE,
