@@ -415,8 +415,44 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'section'     => 'vt_consent',
         'type'        => 'url',
     ]);
+
+    /* — Custom Code -------------------------------------------- */
+    $wp_customize->add_section('vt_custom_code', [
+        'title'       => __('Custom Code', 'vt-folio'),
+        'description' => __('Inject arbitrary HTML into &lt;head&gt;. Useful for analytics tags, site verification codes, and custom meta tags.', 'vt-folio'),
+        'panel'       => 'vt_appearance',
+        'priority'    => 99,
+    ]);
+
+    $wp_customize->add_setting('vt_head_code', [
+        'default'           => '',
+        'sanitize_callback' => 'vt_sanitize_head_code',
+        'transport'         => 'refresh',
+    ]);
+    $wp_customize->add_control('vt_head_code', [
+        'label'       => __('Custom &lt;head&gt; code', 'vt-folio'),
+        'description' => __('Paste meta tags, &lt;script&gt; blocks, or verification codes here. Output just before &lt;/head&gt;.', 'vt-folio'),
+        'section'     => 'vt_custom_code',
+        'type'        => 'textarea',
+    ]);
 }
 add_action('customize_register', 'vt_customizer');
+
+/* ----------------------------------------------------------------
+   Custom head code — sanitize + output
+   Admins on single-site WordPress always have unfiltered_html, so
+   script/link/meta tags pass through. On multisite, non-super-admins
+   are stripped to wp_kses_post for safety.
+   ---------------------------------------------------------------- */
+
+function vt_sanitize_head_code( string $value ): string {
+    return current_user_can( 'unfiltered_html' ) ? $value : wp_kses_post( $value );
+}
+
+add_action('wp_head', function (): void {
+    $code = vt_get_mod('vt_head_code', '');
+    if ($code) echo "\n" . $code . "\n";
+}, 99);
 
 /* ----------------------------------------------------------------
    Sync Customizer values into the block editor palette + typography
