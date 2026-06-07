@@ -20,10 +20,21 @@
         }, { once: true });
     }
 
+    function maybeLoadStats() {
+        var src = cfg.statsSrc;
+        if (!src || document.getElementById('jetpack-stats-js')) return;
+        var s = document.createElement('script');
+        s.id    = 'jetpack-stats-js';
+        s.defer = true;
+        s.src   = src;
+        document.head.appendChild(s);
+    }
+
     function handleConsent(value) {
         setCookie(cfg.cookieName, value, cfg.cookieDays);
         var banner = document.getElementById('vt-cookie-banner');
         if (banner) dismissBanner(banner);
+        if (value === 'granted') maybeLoadStats();
         document.dispatchEvent(new CustomEvent('vt:consent', { detail: { value: value } }));
     }
 
@@ -74,6 +85,7 @@
         var stored = getCookie(cfg.cookieName);
         if (stored === 'granted' || stored === 'denied') {
             banner.remove();
+            if (stored === 'granted') maybeLoadStats();
             return;
         }
 
@@ -92,6 +104,7 @@
                     showBanner(banner);
                 } else {
                     banner.remove();
+                    maybeLoadStats();
                 }
             })
             .catch(function () {

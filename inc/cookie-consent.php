@@ -72,32 +72,26 @@ function vt_consent_granted(): bool {
 
 /* ----------------------------------------------------------------
    Provider registry
+
+   Jetpack Stats is no longer listed here — it is handled client-side
+   in cookie-consent.js (script injected dynamically after consent, or
+   for non-EU visitors). Server-side providers (e.g. a GA4 server event)
+   can still be added via the filter with a 'disable' callback.
    ---------------------------------------------------------------- */
 
 function vt_consent_providers(): array {
-    return apply_filters('vt_consent_providers', [
-        'jetpack-stats' => [
-            'label'    => 'Jetpack Stats',
-            'category' => 'analytics',
-            'disable'  => 'vt_consent_disable_jetpack_stats',
-        ],
-    ]);
+    return apply_filters('vt_consent_providers', []);
 }
 
-function vt_consent_disable_jetpack_stats(): void {
-    // Filter used by Jetpack 11+
-    add_filter('jetpack_is_stats_enabled', '__return_false');
+/* ----------------------------------------------------------------
+   Jetpack Stats — always dequeue the JS; let cookie-consent.js
+   inject it dynamically when consent is granted or visitor is non-EU.
+   Running at priority 99 ensures it fires after Jetpack enqueues.
+   ---------------------------------------------------------------- */
 
-    // Classic stats module: remove the shutdown hook that fires the server-side ping.
-    // Jetpack registers stats_shutdown at plugins_loaded; by the time init runs it's
-    // already on the shutdown queue, so this remove_action lands correctly.
-    remove_action('shutdown', 'stats_shutdown');
-
-    // Dequeue any stats JS enqueued by the module
-    add_action('wp_enqueue_scripts', static function () {
-        wp_dequeue_script('jetpack-stats');
-    }, 99);
-}
+add_action('wp_enqueue_scripts', static function () {
+    wp_dequeue_script('jetpack-stats');
+}, 99);
 
 /* ----------------------------------------------------------------
    Geo REST endpoint — /wp-json/vt/v1/geo
@@ -136,9 +130,8 @@ function vt_consent_init(): void {
     $force_show = (bool) vt_get_mod('vt_consent_force_show', false);
     $consent    = $force_show ? null : vt_consent_value();
 
-    // Disable providers when consent is absent or denied.
-    // Geo check still applies here so non-EU visitors (on uncached pages)
-    // never have their providers blocked unnecessarily.
+    // Run any server-side provider disable callbacks (e.g. GA4 server events).
+    // Jetpack Stats is handled client-side and no longer appears in providers().
     $geo_only = vt_get_mod('vt_consent_geo_only', true);
     $in_scope = $force_show || ($geo_only ? vt_consent_is_eu() : true);
 
@@ -154,7 +147,7 @@ function vt_consent_init(): void {
     // Geo-gating is handled client-side via the /wp-json/vt/v1/geo endpoint
     // so it works correctly even when this page is served from an HTML cache.
     if ($consent === null) {
-        add_action('wp_enqueue_scripts', 'vt_consent_enqueue');
+        add_action('wp_enqueue_scripts', 'vt_consent_enqueue', 50);
         add_action('wp_footer', 'vt_consent_render_banner', 100);
     }
 }
@@ -165,6 +158,8 @@ add_action('init', 'vt_consent_init');
    ---------------------------------------------------------------- */
 
 function vt_consent_enqueue(): void {
+    global $wp_scripts;
+
     $ver = wp_get_theme()->get('Version');
 
     wp_enqueue_script(
@@ -175,10 +170,16 @@ function vt_consent_enqueue(): void {
         true
     );
 
+    // Read the Jetpack Stats src from the registered (not queued) scripts.
+    // It is always registered by Jetpack even though we dequeue it at priority 99.
+    // Running at priority 50 means Jetpack has registered it before we read here.
+    $stats_src = $wp_scripts->registered['jetpack-stats']->src ?? '';
+
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
         'cookieName'  => VT_CONSENT_COOKIE,
         'cookieDays'  => VT_CONSENT_DAYS,
         'geoEndpoint' => rest_url('vt/v1/geo'),
+        'statsSrc'    => $stats_src,
     ]);
 }
 
