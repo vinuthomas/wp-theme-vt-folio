@@ -364,7 +364,8 @@
     var headings = Array.prototype.slice.call(
         content.querySelectorAll('h2, h3')
     ).filter(function (h) {
-        return !h.classList.contains('screen-reader-text');
+        return !h.classList.contains('screen-reader-text')
+            && !h.closest('#jp-relatedposts, .jp-relatedposts, .sharedaddy');
     });
 
     if (headings.length < 3) return;
