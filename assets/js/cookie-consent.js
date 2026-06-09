@@ -89,35 +89,47 @@
             return;
         }
 
-        // Server inlined the geo result — use it directly, no round-trip needed.
-        if (typeof cfg.isEU !== 'undefined') {
-            if (cfg.isEU) {
-                showBanner(banner);
-            } else {
-                banner.remove();
-                maybeLoadStats();
-            }
-            return;
-        }
-
-        // Fallback: fetch geo endpoint (cached-HTML edge case or non-Cloudflare installs).
+        // No geo endpoint configured — show to everyone.
         if (!cfg.geoEndpoint) {
             showBanner(banner);
             return;
         }
 
-        fetch(cfg.geoEndpoint, { credentials: 'omit' })
+        // Check localStorage cache (1-hour TTL) — avoids the network fetch on return visits.
+        var GEO_KEY = 'vt-geo';
+        var cached  = null;
+        try {
+            var raw = localStorage.getItem(GEO_KEY);
+            if (raw) {
+                var parsed = JSON.parse(raw);
+                if (Date.now() - parsed.ts < 3600000) cached = parsed;
+            }
+        } catch (e) {}
+
+        if (cached) {
+            if (cached.eu) { showBanner(banner); } else { banner.remove(); maybeLoadStats(); }
+            return;
+        }
+
+        // Fresh fetch — geo.php runs without WP bootstrap (~50 ms).
+        // Abort after 2.5 s so a network hiccup never stalls the page.
+        var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        var geoTimer   = controller ? setTimeout(function () { controller.abort(); }, 2500) : null;
+
+        fetch(cfg.geoEndpoint, {
+            credentials: 'omit',
+            signal: controller ? controller.signal : undefined,
+        })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if (data.eu) {
-                    showBanner(banner);
-                } else {
-                    banner.remove();
-                    maybeLoadStats();
-                }
+                if (geoTimer) clearTimeout(geoTimer);
+                try { localStorage.setItem(GEO_KEY, JSON.stringify({ eu: !!data.eu, ts: Date.now() })); } catch (e) {}
+                if (data.eu) { showBanner(banner); } else { banner.remove(); maybeLoadStats(); }
             })
             .catch(function () {
+                // Timeout or network error — fail closed (no banner, load stats).
                 banner.remove();
+                maybeLoadStats();
             });
     }
 
