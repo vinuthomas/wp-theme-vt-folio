@@ -13,6 +13,7 @@
         var t = localStorage.getItem('vt-theme') ||
                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.classList.add('vt-loading');
     } catch(e) {}
 })();
 </script>

@@ -28,6 +28,13 @@
     var currentTheme = html.getAttribute('data-theme') || 'light';
     applyTheme(currentTheme);
 
+    // Remove vt-loading after first paint so transitions work for user interactions
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            html.classList.remove('vt-loading');
+        });
+    });
+
     if (toggle) {
         toggle.addEventListener('click', function () {
             var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
