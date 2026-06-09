@@ -157,6 +157,25 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'priority' => 25,
     ]);
 
+    /* — Site Identity ------------------------------------------- */
+    $wp_customize->add_section('vt_identity', [
+        'title'    => __('Site Identity', 'vt-folio'),
+        'panel'    => 'vt_appearance',
+        'priority' => 5,
+    ]);
+
+    $wp_customize->add_setting('vt_logo_text', [
+        'default'           => 'Vinu Thomas',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ]);
+    $wp_customize->add_control('vt_logo_text', [
+        'label'       => __('Logo text', 'vt-folio'),
+        'description' => __('Text shown when the logo image fails to load.', 'vt-folio'),
+        'section'     => 'vt_identity',
+        'type'        => 'text',
+    ]);
+
     /* — Colors: Light Mode --------------------------------------- */
     $wp_customize->add_section('vt_colors_light', [
         'title'       => __('Colors — Light Mode', 'vt-folio'),
@@ -309,6 +328,19 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'type'    => 'text',
     ]);
 
+    $wp_customize->add_setting('vt_posts_per_page', [
+        'default'           => 10,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ]);
+    $wp_customize->add_control('vt_posts_per_page', [
+        'label'       => __('Posts per page', 'vt-folio'),
+        'description' => __('Number of posts shown on the blog listing and archive pages.', 'vt-folio'),
+        'section'     => 'vt_display',
+        'type'        => 'number',
+        'input_attrs' => ['min' => 1, 'max' => 50, 'step' => 1],
+    ]);
+
     /* — Social Links -------------------------------------------- */
     $wp_customize->add_section('vt_social', [
         'title'    => __('Social Links', 'vt-folio'),
@@ -416,12 +448,25 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'type'        => 'url',
     ]);
 
-    /* — Custom Code -------------------------------------------- */
+    /* — Additional Code panel (top-level) ---------------------- */
+    $wp_customize->add_panel('vt_code', [
+        'title'    => __('Additional Code', 'vt-folio'),
+        'priority' => 26,
+    ]);
+
+    // Move the built-in Additional CSS section into this panel.
+    $built_in_css = $wp_customize->get_section('custom_css');
+    if ($built_in_css) {
+        $built_in_css->panel    = 'vt_code';
+        $built_in_css->priority = 20;
+    }
+
+    /* — Code in Head ------------------------------------------- */
     $wp_customize->add_section('vt_custom_code', [
-        'title'       => __('Custom Code', 'vt-folio'),
+        'title'       => __('Code in Head', 'vt-folio'),
         'description' => __('Inject arbitrary HTML into &lt;head&gt;. Useful for analytics tags, site verification codes, and custom meta tags.', 'vt-folio'),
-        'panel'       => 'vt_appearance',
-        'priority'    => 99,
+        'panel'       => 'vt_code',
+        'priority'    => 10,
     ]);
 
     $wp_customize->add_setting('vt_head_code', [

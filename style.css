@@ -4,7 +4,7 @@ Theme URI: https://vinuthomas.com
 Author: Vinu Thomas
 Author URI: https://vinuthomas.com
 Description: Clean personal blog theme — masonry card grid, light/dark mode, Gutenberg support.
-Version: 1.7.4
+Version: 1.8.0
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -792,6 +792,9 @@ p:last-child { margin-bottom: 0; }
   transition: color var(--ease);
 }
 .entry-content a:hover { color: var(--accent-hover); }
+
+.entry-content strong,
+.entry-content b { color: var(--text-primary); }
 
 .entry-content ul,
 .entry-content ol { padding-left: 1.5rem; list-style: initial; }
@@ -2053,3 +2056,185 @@ p:last-child { margin-bottom: 0; }
   .vt-cookie-banner__actions { width: 100%; justify-content: flex-end; }
 }
 .vt-lightbox__nav[hidden] { display: none; }
+
+/* ============================================================
+   FONT SIZE TOGGLE
+   ============================================================ */
+
+html.vt-font-lg .entry-content { font-size: 1.2rem; }
+html.vt-font-sm .entry-content { font-size: 0.9rem; }
+
+.vt-font-size-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.vt-font-btn {
+  border-radius: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  letter-spacing: -0.01em;
+  width: 32px;
+  height: 32px;
+}
+
+.vt-font-btn:first-child { border-right: 1px solid var(--border); }
+
+.vt-font-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================================
+   TABLE OF CONTENTS
+   ============================================================ */
+
+/* Sidebar TOC */
+#vt-toc {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.vt-toc__toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vt-toc__toggle::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-bottom: 3px;
+}
+
+#vt-toc.is-collapsed .vt-toc__toggle::after {
+  transform: rotate(-135deg);
+  margin-bottom: -3px;
+}
+
+.vt-toc__list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+#vt-toc.is-collapsed .vt-toc__list { display: none; }
+
+.vt-toc__list li a {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  text-decoration: none;
+  display: block;
+  padding: 0.2rem 0;
+  line-height: 1.4;
+}
+
+.vt-toc__list li a:hover { color: var(--accent-text); }
+.vt-toc__list li.is-active > a { color: var(--accent-text); font-weight: 600; }
+.vt-toc__sub { padding-left: 1rem; }
+
+/* Inline TOC (mobile) */
+.vt-toc-inline {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.vt-toc-inline summary {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.vt-toc-inline .vt-toc__list { margin-top: 0.75rem; }
+
+@media (min-width: 1380px) {
+  .vt-toc-inline { display: none; }
+}
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+
+#vt-back-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s, background 0.2s;
+  z-index: 900;
+}
+
+#vt-back-top.is-visible { opacity: 1; transform: translateY(0); }
+#vt-back-top:hover { background: var(--accent-hover); }
+#vt-back-top svg { width: 20px; height: 20px; }
+
+/* ============================================================
+   LAZY COMMENT FORM
+   ============================================================ */
+
+.comment-respond {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.comment-respond.is-revealed { opacity: 1; transform: none; }
+
+/* ============================================================
+   LOGO TEXT FALLBACK
+   ============================================================ */
+
+.site-logo__text {
+  display: none;
+  font-family: var(--font-accent);
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.site-logo.logo-failed .site-logo__img { display: none !important; }
+.site-logo.logo-failed .site-logo__text { display: inline; }
+.footer-logo .site-logo__text { font-size: 1rem; }

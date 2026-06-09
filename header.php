@@ -4,6 +4,8 @@
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="profile" href="https://gmpg.org/xfn/11">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Prevent flash of wrong theme -->
 <script>
 (function(){
@@ -13,6 +15,9 @@
         document.documentElement.setAttribute('data-theme', t);
     } catch(e) {}
 })();
+</script>
+<script>
+(function(){try{var s=localStorage.getItem('vt-font-size');if(s)document.documentElement.classList.add('vt-font-'+s);}catch(e){}})();
 </script>
 <?php $vt_mastodon_url = vt_get_mod('vt_social_mastodon', ''); ?>
 <?php if ($vt_mastodon_url) : ?><link rel="me" href="<?php echo esc_url($vt_mastodon_url); ?>"><?php endif; ?>
@@ -57,6 +62,7 @@ endif;
                      alt=""
                      class="site-logo__img site-logo__img--dark"
                      height="48" width="130">
+                <span class="site-logo__text" aria-hidden="true"><?php echo esc_html(vt_get_mod('vt_logo_text', 'Vinu Thomas')); ?></span>
             </a>
 
             <nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e('Primary navigation', 'vt-folio'); ?>">
@@ -73,6 +79,19 @@ endif;
             </nav>
 
             <div class="header-actions">
+                <?php if (is_singular()) : ?>
+                <div class="vt-font-size-group" role="group" aria-label="<?php esc_attr_e('Text size', 'vt-folio'); ?>">
+                    <button class="header-btn vt-font-btn" id="vt-font-decrease"
+                            aria-label="<?php esc_attr_e('Decrease text size', 'vt-folio'); ?>" disabled>
+                        <span aria-hidden="true">A−</span>
+                    </button>
+                    <button class="header-btn vt-font-btn" id="vt-font-increase"
+                            aria-label="<?php esc_attr_e('Increase text size', 'vt-folio'); ?>">
+                        <span aria-hidden="true">A+</span>
+                    </button>
+                </div>
+                <?php endif; ?>
+
                 <button class="header-btn" id="search-toggle"
                         aria-expanded="false" aria-controls="search-overlay"
                         aria-label="<?php esc_attr_e('Open search', 'vt-folio'); ?>">

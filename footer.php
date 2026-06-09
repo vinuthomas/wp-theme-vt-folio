@@ -15,6 +15,7 @@
                      alt=""
                      class="site-logo__img site-logo__img--dark"
                      height="28" width="78">
+                <span class="site-logo__text" aria-hidden="true"><?php echo esc_html(vt_get_mod('vt_logo_text', 'Vinu Thomas')); ?></span>
             </a>
 
             <?php if (has_nav_menu('footer')) : ?>
@@ -89,6 +90,12 @@
         </div>
     </div>
 </footer>
+
+<button id="vt-back-top" aria-label="<?php esc_attr_e('Back to top', 'vt-folio'); ?>" hidden>
+    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
+    </svg>
+</button>
 
 </div><!-- .site-wrapper -->
 

@@ -325,3 +325,14 @@ function vt_widgets_init(): void {
 }
 add_action('widgets_init', 'vt_widgets_init');
 
+/* ----------------------------------------------------------------
+   Posts per page — apply Customizer value to main query
+   ---------------------------------------------------------------- */
+
+add_action('pre_get_posts', function (WP_Query $query): void {
+    if (is_admin() || ! $query->is_main_query()) return;
+    if (! $query->is_home() && ! $query->is_archive() && ! $query->is_search()) return;
+    $ppp = (int) vt_get_mod('vt_posts_per_page', 10);
+    if ($ppp > 0) $query->set('posts_per_page', $ppp);
+});
+

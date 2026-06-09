@@ -351,3 +351,204 @@
     );
 
 }());
+
+/* ----------------------------------------------------------------
+   Table of Contents
+   ---------------------------------------------------------------- */
+(function () {
+    if (!document.body.classList.contains('single-post')) return;
+
+    var content = document.querySelector('.entry-content');
+    if (!content) return;
+
+    var headings = Array.prototype.slice.call(
+        content.querySelectorAll('h2, h3')
+    ).filter(function (h) {
+        return !h.classList.contains('screen-reader-text');
+    });
+
+    if (headings.length < 3) return;
+
+    var usedSlugs = {};
+    headings.forEach(function (h) {
+        if (h.id) { usedSlugs[h.id] = true; return; }
+        var base = h.textContent.trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+        var slug = base || 'section';
+        var counter = 2;
+        while (usedSlugs[slug]) { slug = base + '-' + counter++; }
+        h.id = slug;
+        usedSlugs[slug] = true;
+    });
+
+    function buildList() {
+        var ol = document.createElement('ol');
+        ol.className = 'vt-toc__list';
+        headings.forEach(function (h) {
+            var li = document.createElement('li');
+            if (h.tagName === 'H3') li.className = 'vt-toc__sub';
+            var a = document.createElement('a');
+            a.href = '#' + h.id;
+            a.textContent = h.textContent.trim();
+            a.dataset.tocTarget = h.id;
+            li.appendChild(a);
+            ol.appendChild(li);
+        });
+        return ol;
+    }
+
+    var sidebar = document.querySelector('.single-sidebar');
+    if (sidebar) {
+        var nav = document.createElement('nav');
+        nav.id = 'vt-toc';
+        nav.setAttribute('aria-label', 'Table of contents');
+
+        var storedOpen = localStorage.getItem('vt-toc-open');
+        var isOpen = storedOpen === null ? true : storedOpen === '1';
+        if (!isOpen) nav.classList.add('is-collapsed');
+
+        var tocToggle = document.createElement('button');
+        tocToggle.className = 'vt-toc__toggle';
+        tocToggle.setAttribute('aria-expanded', String(isOpen));
+        tocToggle.textContent = 'Contents';
+        tocToggle.addEventListener('click', function () {
+            var collapsed = nav.classList.toggle('is-collapsed');
+            tocToggle.setAttribute('aria-expanded', String(!collapsed));
+            try { localStorage.setItem('vt-toc-open', collapsed ? '0' : '1'); } catch (e) {}
+        });
+
+        nav.appendChild(tocToggle);
+        nav.appendChild(buildList());
+        sidebar.insertBefore(nav, sidebar.firstChild);
+    }
+
+    var inlineDetails = document.createElement('details');
+    inlineDetails.className = 'vt-toc-inline';
+    var tocSummary = document.createElement('summary');
+    tocSummary.textContent = 'Contents';
+    inlineDetails.appendChild(tocSummary);
+    inlineDetails.appendChild(buildList());
+    content.parentNode.insertBefore(inlineDetails, content);
+
+    if ('IntersectionObserver' in window) {
+        var tocLinks = document.querySelectorAll('#vt-toc a[data-toc-target], .vt-toc-inline a[data-toc-target]');
+        var headingObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var id = entry.target.id;
+                tocLinks.forEach(function (link) {
+                    link.parentElement.classList.toggle('is-active', link.dataset.tocTarget === id);
+                });
+            });
+        }, { rootMargin: '-20% 0px -70% 0px' });
+        headings.forEach(function (h) { headingObserver.observe(h); });
+    }
+}());
+
+/* ----------------------------------------------------------------
+   Back to top
+   ---------------------------------------------------------------- */
+(function () {
+    var btn = document.getElementById('vt-back-top');
+    if (!btn) return;
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+            var past = window.scrollY > window.innerHeight;
+            if (past) {
+                btn.removeAttribute('hidden');
+                btn.classList.add('is-visible');
+            } else {
+                btn.classList.remove('is-visible');
+                btn.setAttribute('hidden', '');
+            }
+            ticking = false;
+        });
+    }, { passive: true });
+
+    btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}());
+
+/* ----------------------------------------------------------------
+   Font size toggle
+   ---------------------------------------------------------------- */
+(function () {
+    var steps = ['sm', '', 'lg'];
+    var btnDec = document.getElementById('vt-font-decrease');
+    var btnInc = document.getElementById('vt-font-increase');
+    if (!btnDec || !btnInc) return;
+
+    var current = '';
+    try {
+        var stored = localStorage.getItem('vt-font-size');
+        if (stored === 'lg' || stored === 'sm') current = stored;
+    } catch (e) {}
+
+    function updateButtons() {
+        var idx = steps.indexOf(current);
+        btnDec.disabled = idx <= 0;
+        btnInc.disabled = idx >= steps.length - 1;
+    }
+
+    function applySize(size) {
+        if (current) document.documentElement.classList.remove('vt-font-' + current);
+        current = size;
+        if (current) document.documentElement.classList.add('vt-font-' + current);
+        try { localStorage.setItem('vt-font-size', current); } catch (e) {}
+        updateButtons();
+    }
+
+    updateButtons();
+
+    btnDec.addEventListener('click', function () {
+        var idx = steps.indexOf(current);
+        if (idx > 0) applySize(steps[idx - 1]);
+    });
+
+    btnInc.addEventListener('click', function () {
+        var idx = steps.indexOf(current);
+        if (idx < steps.length - 1) applySize(steps[idx + 1]);
+    });
+}());
+
+/* ----------------------------------------------------------------
+   Lazy-reveal comment form
+   ---------------------------------------------------------------- */
+(function () {
+    var form = document.querySelector('#comments .comment-respond');
+    if (!form) return;
+
+    function reveal() { form.classList.add('is-revealed'); }
+
+    if (!('IntersectionObserver' in window)) { reveal(); return; }
+
+    var comments = document.getElementById('comments');
+    if (!comments) { reveal(); return; }
+
+    var commentObs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { reveal(); commentObs.disconnect(); }
+    }, { rootMargin: '200px' });
+    commentObs.observe(comments);
+}());
+
+/* ----------------------------------------------------------------
+   Logo image fallback
+   ---------------------------------------------------------------- */
+(function () {
+    var imgs = document.querySelectorAll('img.site-logo__img');
+    imgs.forEach(function (img) {
+        img.addEventListener('error', function () {
+            var logo = img.closest('.site-logo');
+            if (logo) logo.classList.add('logo-failed');
+        });
+    });
+}());
