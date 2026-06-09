@@ -177,8 +177,8 @@ function vt_consent_enqueue(): void {
     // Prefer the actual Jetpack-registered URL over a derived one.
     // By priority 50 on wp_enqueue_scripts, Jetpack (priority 10) has already registered
     // jetpack-stats, so wp_scripts()->registered is authoritative here.
-    $scripts    = wp_scripts();
-    $stats_src  = isset( $scripts->registered['jetpack-stats'] )
+    $scripts   = wp_scripts();
+    $stats_src = isset( $scripts->registered['jetpack-stats'] )
         ? $scripts->registered['jetpack-stats']->src
         : 'https://stats.wp.com/e-' . gmdate( 'oW' ) . '.js';
 
@@ -189,15 +189,40 @@ function vt_consent_enqueue(): void {
         'statsSrc'    => $stats_src,
     ]);
 
-    // Jetpack Boost bundles all footer scripts. When script_loader_tag returns ''
-    // for jetpack-stats (no consent), Boost treats the handle as inactive and drops
-    // its inline _stq config too — so maybeLoadStats() loads the script but finds
-    // no page-view data to send. Fix: re-attach Jetpack's _stq inline config to our
-    // own handle so Boost always includes it in the bundle.
-    $stq_inline = $scripts->get_data( 'jetpack-stats', 'after' );
-    if ( ! empty( $stq_inline ) ) {
-        $stq_js = is_array( $stq_inline ) ? implode( "\n", $stq_inline ) : (string) $stq_inline;
-        wp_add_inline_script( 'vt-cookie-consent', $stq_js, 'before' );
+    // Build the _stq view data ourselves so maybeLoadStats() has page context
+    // when it dynamically loads stats.wp.com.
+    //
+    // Why not use wp_scripts()->get_data('jetpack-stats', 'after')?
+    //   Jetpack outputs _stq via a wp_footer hook that first checks
+    //   wp_script_is('jetpack-stats', 'done'). Our script_loader_tag filter
+    //   returns '' (suppressing the src), which leaves the handle unmarked as
+    //   done, so Jetpack's footer hook bails — no _stq anywhere in the page.
+    //
+    // Why not mark the handle done manually to trigger Jetpack's footer hook?
+    //   Doing so also causes Jetpack to output <img id="wpstats"> (the pixel),
+    //   which fires a network request immediately on parse — a GDPR violation
+    //   for EU visitors who haven't consented yet.
+    //
+    // Solution: generate _stq inline ourselves using Jetpack's own values.
+    //   The data in the page is inert (no network request). Only maybeLoadStats()
+    //   triggers a request, and it only runs after consent is confirmed.
+    if ( class_exists( 'Jetpack_Options' ) ) {
+        $blog_id = (string) \Jetpack_Options::get_option( 'id' );
+        if ( $blog_id ) {
+            $j_ver  = ( defined( 'JETPACK__API_VERSION' ) && defined( 'JETPACK__VERSION' ) )
+                      ? JETPACK__API_VERSION . ':' . JETPACK__VERSION
+                      : '1:0';
+            $stq    = [
+                'v'    => 'ext',
+                'j'    => $j_ver,
+                'blog' => $blog_id,
+                'post' => (string) ( is_singular() ? (int) get_queried_object_id() : 0 ),
+                'tz'   => (string) get_option( 'gmt_offset' ),
+                'srv'  => (string) wp_parse_url( home_url(), PHP_URL_HOST ),
+            ];
+            $stq_js = '_stq = window._stq || []; _stq.push( [\'view\', ' . wp_json_encode( $stq ) . '] );';
+            wp_add_inline_script( 'vt-cookie-consent', $stq_js, 'before' );
+        }
     }
 }
 

@@ -4,7 +4,7 @@ Theme URI: https://vinuthomas.com
 Author: Vinu Thomas
 Author URI: https://vinuthomas.com
 Description: Clean personal blog theme — masonry card grid, light/dark mode, Gutenberg support.
-Version: 1.8.8
+Version: 1.8.9
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -1736,6 +1736,11 @@ p:last-child { margin-bottom: 0; }
   /* ── Sidebar (right column) ── */
   .single-sidebar {
     display: block;
+  }
+
+  /* Only the TOC sticks — not the whole sidebar.
+     Making the whole sidebar sticky clips bottom widgets on short viewports. */
+  #vt-toc {
     position: sticky;
     top: calc(var(--header-height) + 2.5rem);
   }
@@ -2120,6 +2125,7 @@ html.vt-font-sm .entry-content { font-size: 0.9rem; }
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
+  margin-bottom: 1.25rem;
   max-height: 70vh;
   overflow-y: auto;
 }

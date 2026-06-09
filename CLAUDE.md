@@ -65,7 +65,7 @@ inc/
 
 **Critical invariant:** The `script_loader_tag` filter **must** call `vt_consent_granted()` before returning `''`. If it always returns `''`, returning visitors with a granted cookie never get stats (because `cookie-consent.js` is only enqueued for new visitors). This was the v1.8.4 bug.
 
-**Jetpack Boost compatibility (v1.8.8):** Jetpack Boost bundles all footer scripts. When `script_loader_tag` returns `''` for `jetpack-stats`, Boost treats the handle as fully inactive and drops its `_stq` inline config from the bundle. Without `_stq`, `maybeLoadStats()` loads the stats script but there is no page-view data for it to send. Fix: `vt_consent_enqueue()` reads Jetpack's `_stq` inline config via `wp_scripts()->get_data('jetpack-stats', 'after')` and re-attaches it to the `vt-cookie-consent` handle, so Boost always includes it.
+**Jetpack Boost + `_stq` (v1.8.8/v1.8.9):** Jetpack's `_stq` push is output by a `wp_footer` hook that first checks `wp_script_is('jetpack-stats', 'done')`. Our `script_loader_tag` filter returns `''` which leaves the handle unmarked as done, so Jetpack's footer hook bails — no `_stq` in the page, so `maybeLoadStats()` loads the script but has no page-view data. Marking the handle done manually causes Jetpack to also output the `<img id="wpstats">` pixel, which fires a network request immediately on parse (GDPR violation for EU). Fix: `vt_consent_enqueue()` generates `_stq` data directly using `Jetpack_Options::get_option('id')` and inlines it on the `vt-cookie-consent` handle. The inlined data is inert (no request); only `maybeLoadStats()` triggers a request, and only after consent.
 
 **To force EU banner in local dev**, add to `functions.php`:
 ```php
