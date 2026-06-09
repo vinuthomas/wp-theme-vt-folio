@@ -4,7 +4,7 @@ Theme URI: https://vinuthomas.com
 Author: Vinu Thomas
 Author URI: https://vinuthomas.com
 Description: Clean personal blog theme — masonry card grid, light/dark mode, Gutenberg support.
-Version: 1.8.5
+Version: 1.8.6
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -1906,6 +1906,8 @@ p:last-child { margin-bottom: 0; }
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.93);
+  /* horizontal padding clears the fixed prev/next buttons (1.25rem gap + 2.75rem button) */
+  padding: 0 4.5rem;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -1913,30 +1915,38 @@ p:last-child { margin-bottom: 0; }
 .vt-lightbox.is-open { opacity: 1; visibility: visible; }
 
 .vt-lightbox__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 92vw;
+  position: relative;
+  line-height: 0;    /* kill inline gap below img */
+  max-width: 100%;
+  max-height: 100vh;
 }
 .vt-lightbox__img {
-  max-width: 92vw;
-  max-height: 82vh;
+  display: block;
+  max-width: 100%;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 4px;
-  display: block;
 }
 .vt-lightbox__caption {
-  color: rgba(255, 255, 255, 0.65);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.82rem;
   font-family: var(--font-body);
   text-align: center;
-  margin-top: 0.75rem;
-  max-width: 60ch;
+  padding: 2.5rem 1.25rem 1rem;
   line-height: 1.5;
+  border-radius: 0 0 4px 4px;
 }
 .vt-lightbox__close,
 .vt-lightbox__nav {
   position: fixed;
+  z-index: 1;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
@@ -2056,6 +2066,12 @@ p:last-child { margin-bottom: 0; }
   .vt-cookie-banner__actions { width: 100%; justify-content: flex-end; }
 }
 .vt-lightbox__nav[hidden] { display: none; }
+
+@media (max-width: 600px) {
+  /* On narrow screens the side padding squeezes the image — drop it and let
+     the fixed nav buttons sit over the image edges (standard mobile pattern). */
+  .vt-lightbox { padding: 0; }
+}
 
 /* ============================================================
    FONT SIZE TOGGLE
