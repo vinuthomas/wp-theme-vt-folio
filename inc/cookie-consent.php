@@ -175,10 +175,15 @@ function vt_consent_enqueue(): void {
     // unreliable because Jetpack's Script Strategy API enqueues after our priority 50.
     $stats_src = 'https://stats.wp.com/e-' . gmdate( 'oW' ) . '.js';
 
+    $force_show = (bool) vt_get_mod('vt_consent_force_show', false);
+    $geo_only   = (bool) vt_get_mod('vt_consent_geo_only', true);
+    $is_eu      = $force_show || ($geo_only ? vt_consent_is_eu() : true);
+
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
         'cookieName'  => VT_CONSENT_COOKIE,
         'cookieDays'  => VT_CONSENT_DAYS,
-        'geoEndpoint' => rest_url('vt/v1/geo'),
+        'isEU'        => $is_eu,
+        'geoEndpoint' => rest_url('vt/v1/geo'), // fallback for cached-HTML edge case
         'statsSrc'    => $stats_src,
     ]);
 }

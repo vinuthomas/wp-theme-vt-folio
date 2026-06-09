@@ -89,14 +89,23 @@
             return;
         }
 
-        // No geo endpoint configured — show to everyone (fallback / force-show mode).
+        // Server inlined the geo result — use it directly, no round-trip needed.
+        if (typeof cfg.isEU !== 'undefined') {
+            if (cfg.isEU) {
+                showBanner(banner);
+            } else {
+                banner.remove();
+                maybeLoadStats();
+            }
+            return;
+        }
+
+        // Fallback: fetch geo endpoint (cached-HTML edge case or non-Cloudflare installs).
         if (!cfg.geoEndpoint) {
             showBanner(banner);
             return;
         }
 
-        // Ping the geo endpoint — always dynamic, never cached by any HTML cache layer.
-        // Shows the banner only for EU/EEA visitors; silently removes it for everyone else.
         fetch(cfg.geoEndpoint, { credentials: 'omit' })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -108,7 +117,6 @@
                 }
             })
             .catch(function () {
-                // Network error — fail closed, don't show banner.
                 banner.remove();
             });
     }
