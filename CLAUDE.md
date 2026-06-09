@@ -26,7 +26,11 @@ comments.php           — Comment list + form; uses vt_comment() callback from 
 template-parts/
   content-card.php     — Post card partial (used by home/archive/search)
   content-none.php     — No-posts placeholder
-assets/js/theme.js     — Dark mode toggle, reading progress bar, mobile menu
+assets/js/theme.js           — Dark mode toggle, reading progress bar, mobile menu
+assets/js/cookie-consent.js  — Cookie banner logic + client-side Jetpack Stats injection
+inc/
+  cookie-consent.php   — Cookie consent system (geo-gating, banner, Jetpack Stats suppression)
+  customizer.php       — All Customizer panel/section/setting/control registrations
 ```
 
 ## Key design decisions
@@ -38,6 +42,41 @@ assets/js/theme.js     — Dark mode toggle, reading progress bar, mobile menu
 - **Accent color**: `#c8853a` warm orange. Decorative use only (borders, icons, progress bar). **Never use `--accent` for text** — it only passes 3:1 contrast on white. Use `--accent-text` (`#8c5a1e`, 5.25:1) for small labels and `--accent-hover` for interactive text states. Nav active/hover state uses `--accent-text` for this reason.
 - **Image `sizes` attributes**: hero (`single.php`) uses `(max-width: 1264px) calc(100vw - 4rem), 1168px`; regular cards use `(max-width: 640px) calc(100vw - 4rem), (max-width: 1024px) calc(50vw - 3rem), 373px`; featured card uses `(max-width: 1024px) 100vw, calc(50vw - 2rem)`. These must match the CSS grid breakpoints — update both together if layout changes.
 - **Hero image upload size**: upload images at least 1200px wide for `vt-hero`. The registered size is 1920×800 but Jetpack CDN handles the resize; images smaller than the target fall back to the original dimensions.
+
+## Cookie consent & Jetpack Stats
+
+**Files:** `inc/cookie-consent.php` (server-side) + `assets/js/cookie-consent.js` (client-side)
+
+**How it works:**
+
+1. The `script_loader_tag` filter in `cookie-consent.php` suppresses the Jetpack Stats `<script>` tag — **unless** `vt_consent_granted()` is true, in which case it lets the tag through as normal.
+2. When no consent cookie is set, the PHP enqueues `cookie-consent.js` and renders the hidden banner HTML in the footer.
+3. `cookie-consent.js` runs on DOMContentLoaded: if a consent cookie is already present it acts immediately (removes banner, loads stats if granted). If not, it fetches the geo endpoint and either shows the banner (EU) or silently loads stats (non-EU).
+
+**Stats load paths:**
+| Visitor | How stats fire |
+|---|---|
+| Returning visitor, `vt_consent=granted` | Server-rendered `<script>` tag (fast) |
+| Non-EU, no cookie | `maybeLoadStats()` after geo check returns `{eu:false}` |
+| EU visitor accepts banner | `maybeLoadStats()` inside `handleConsent('granted')` |
+| `vt_consent=denied` or EU who rejects | Never |
+
+**Geo endpoint:** `GET /wp-json/vt/v1/geo` — always dynamic, never cached. Returns `{"eu":true|false}`. Result is cached in `localStorage` under key `vt-geo` for 1 hour (TTL check in `cookie-consent.js`).
+
+**Critical invariant:** The `script_loader_tag` filter **must** call `vt_consent_granted()` before returning `''`. If it always returns `''`, returning visitors with a granted cookie never get stats (because `cookie-consent.js` is only enqueued for new visitors). This was the v1.8.4 bug.
+
+**To force EU banner in local dev**, add to `functions.php`:
+```php
+add_filter('vt_consent_country_code', fn() => 'DE');
+```
+
+**Testing with curl:**
+```bash
+# Granted: should include jetpack-stats-js script tag
+curl -s -b "vt_consent=granted" http://localhost:8080/ | grep 'jetpack-stats-js"'
+# No cookie: should include banner HTML + cookie-consent.js, no script tag
+curl -s http://localhost:8080/ | grep -E 'vt-cookie-banner|jetpack-stats-js"'
+```
 
 ## Helper functions (functions.php)
 
