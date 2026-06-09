@@ -117,7 +117,7 @@ function vt_consent_geo_rest(): WP_REST_Response {
     $eu         = $force_show || ($geo_only ? vt_consent_is_eu() : true);
 
     $response = new WP_REST_Response(['eu' => $eu], 200);
-    $response->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+    $response->header('Cache-Control', 'no-cache, must-revalidate');
     $response->header('Pragma', 'no-cache');
     return $response;
 }
@@ -178,7 +178,7 @@ function vt_consent_enqueue(): void {
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
         'cookieName'  => VT_CONSENT_COOKIE,
         'cookieDays'  => VT_CONSENT_DAYS,
-        'geoEndpoint' => get_template_directory_uri() . '/geo.php',
+        'geoEndpoint' => rest_url('vt/v1/geo'),
         'statsSrc'    => $stats_src,
     ]);
 }
