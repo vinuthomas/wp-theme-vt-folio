@@ -65,6 +65,8 @@ inc/
 
 **Critical invariant:** The `script_loader_tag` filter **must** call `vt_consent_granted()` before returning `''`. If it always returns `''`, returning visitors with a granted cookie never get stats (because `cookie-consent.js` is only enqueued for new visitors). This was the v1.8.4 bug.
 
+**Jetpack Boost compatibility (v1.8.8):** Jetpack Boost bundles all footer scripts. When `script_loader_tag` returns `''` for `jetpack-stats`, Boost treats the handle as fully inactive and drops its `_stq` inline config from the bundle. Without `_stq`, `maybeLoadStats()` loads the stats script but there is no page-view data for it to send. Fix: `vt_consent_enqueue()` reads Jetpack's `_stq` inline config via `wp_scripts()->get_data('jetpack-stats', 'after')` and re-attaches it to the `vt-cookie-consent` handle, so Boost always includes it.
+
 **To force EU banner in local dev**, add to `functions.php`:
 ```php
 add_filter('vt_consent_country_code', fn() => 'DE');

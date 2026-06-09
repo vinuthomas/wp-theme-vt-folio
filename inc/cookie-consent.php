@@ -174,10 +174,13 @@ function vt_consent_enqueue(): void {
         true
     );
 
-    // Jetpack Stats uses a weekly-versioned URL: stats.wp.com/e-{ISO year}{ISO week}.js
-    // Derived from the date rather than reading wp_scripts->registered, which is
-    // unreliable because Jetpack's Script Strategy API enqueues after our priority 50.
-    $stats_src = 'https://stats.wp.com/e-' . gmdate( 'oW' ) . '.js';
+    // Prefer the actual Jetpack-registered URL over a derived one.
+    // By priority 50 on wp_enqueue_scripts, Jetpack (priority 10) has already registered
+    // jetpack-stats, so wp_scripts()->registered is authoritative here.
+    $scripts    = wp_scripts();
+    $stats_src  = isset( $scripts->registered['jetpack-stats'] )
+        ? $scripts->registered['jetpack-stats']->src
+        : 'https://stats.wp.com/e-' . gmdate( 'oW' ) . '.js';
 
     wp_localize_script('vt-cookie-consent', 'vtConsent', [
         'cookieName'  => VT_CONSENT_COOKIE,
@@ -185,6 +188,17 @@ function vt_consent_enqueue(): void {
         'geoEndpoint' => rest_url('vt/v1/geo'),
         'statsSrc'    => $stats_src,
     ]);
+
+    // Jetpack Boost bundles all footer scripts. When script_loader_tag returns ''
+    // for jetpack-stats (no consent), Boost treats the handle as inactive and drops
+    // its inline _stq config too — so maybeLoadStats() loads the script but finds
+    // no page-view data to send. Fix: re-attach Jetpack's _stq inline config to our
+    // own handle so Boost always includes it in the bundle.
+    $stq_inline = $scripts->get_data( 'jetpack-stats', 'after' );
+    if ( ! empty( $stq_inline ) ) {
+        $stq_js = is_array( $stq_inline ) ? implode( "\n", $stq_inline ) : (string) $stq_inline;
+        wp_add_inline_script( 'vt-cookie-consent', $stq_js, 'before' );
+    }
 }
 
 /* ----------------------------------------------------------------
