@@ -92,7 +92,11 @@ function vt_consent_providers(): array {
    ---------------------------------------------------------------- */
 
 add_filter('script_loader_tag', static function (string $tag, string $handle): string {
-    return $handle === 'jetpack-stats' ? '' : $tag;
+    if ($handle !== 'jetpack-stats') return $tag;
+    // Consent already granted — let Jetpack's own script load normally.
+    // Only suppress when consent is unknown/denied; cookie-consent.js handles
+    // dynamic injection for the first-visit and non-EU cases.
+    return vt_consent_granted() ? $tag : '';
 }, 10, 2);
 
 /* ----------------------------------------------------------------

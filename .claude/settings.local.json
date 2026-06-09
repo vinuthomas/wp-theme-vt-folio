@@ -43,7 +43,15 @@
       "Bash(php -l /Users/vinuthomas/code/wordpress_theme/inc/cookie-consent.php)",
       "Bash(php -l /Users/vinuthomas/code/wordpress_theme/inc/customizer.php)",
       "Bash(php -l /Users/vinuthomas/code/wordpress_theme/functions.php)",
-      "Bash(xargs sed -i '' \"s/'vinu-thomas'/'vt-folio'/g\")"
+      "Bash(xargs sed -i '' \"s/'vinu-thomas'/'vt-folio'/g\")",
+      "Read(//Users/vinuthomas/code/vinuthomas-local/**)",
+      "Bash(grep -rnE 'call_user_func|include \\\\$|require \\\\$' --include='*.php' .)",
+      "Bash(grep -rnE 'echo +\\\\$[a-zA-Z_]' --include='*.php' .)",
+      "Bash(rm -f ~/Desktop/vinu-thomas-theme.zip)",
+      "Bash(cp -r /Users/vinuthomas/code/wordpress_theme /tmp/vinu-thomas)",
+      "Bash(rm -f /tmp/vinu-thomas/CLAUDE.md)",
+      "Bash(rm -rf /tmp/vinu-thomas/.claude /tmp/vinu-thomas/.git /tmp/vinu-thomas/security-reports)",
+      "Bash(zip -r ~/Desktop/vinu-thomas-theme.zip vinu-thomas --exclude \"*/.DS_Store\")"
     ]
   }
 }
