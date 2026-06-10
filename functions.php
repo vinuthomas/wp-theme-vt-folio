@@ -183,14 +183,29 @@ function vt_the_categories(string $style = 'plain'): void {
 }
 
 /* ----------------------------------------------------------------
-   Cache-Control header — tell upstream proxies not to rely on the
-   origin header (Jetpack sends max-age=172800). Cloudflare already
-   ignores it via the Cache Rule, but this keeps the origin clean.
+   Cache-Control header for anonymous front-end responses.
+
+   HTML page views get `no-cache`: the browser may store the response
+   but must revalidate before reuse. Unlike `no-store`, this keeps the
+   page eligible for the back/forward cache (bfcache) — `no-store`
+   disables bfcache in Chrome, forcing a full reload (and the dark-mode
+   flash) on every back/forward navigation. Cloudflare edge-caches HTML
+   separately for a week (purged on publish), so revalidation is cheap.
+
+   Dynamic endpoints (feeds, *.php such as xmlrpc/comments) keep
+   `no-store` so they are never stored anywhere. The Cloudflare Cache
+   Rule excludes the same paths from edge caching.
    ---------------------------------------------------------------- */
 
 add_action('send_headers', function (): void {
-    if (!is_user_logged_in()) {
+    if (is_user_logged_in()) {
+        return;
+    }
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (is_feed() || strpos($uri, '.php') !== false) {
         header('Cache-Control: no-store');
+    } else {
+        header('Cache-Control: no-cache');
     }
 });
 
