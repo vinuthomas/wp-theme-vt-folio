@@ -4,7 +4,7 @@ Theme URI: https://vinuthomas.com
 Author: Vinu Thomas
 Author URI: https://vinuthomas.com
 Description: Clean personal blog theme — masonry card grid, light/dark mode, Gutenberg support.
-Version: 1.8.10
+Version: 1.8.11
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -89,8 +89,19 @@ body {
   line-height: 1.7;
   color: var(--text-primary);
   background: var(--bg);
-  transition: background var(--ease), color var(--ease);
+  /* Explicitly none (not merely omitted) so a stale Jetpack Boost critical-CSS
+     cache that inlined the old `transition: background` can't keep animating
+     the body on load — omission wouldn't override an inherited declaration. */
+  transition: none;
 }
+
+/* Fade the body background ONLY when the user flips the theme toggle — never on
+   page load. Gating on a JS-applied class (set in theme.js on toggle click)
+   instead of a load-time timer makes this immune to the first-paint race with
+   deferred stylesheets. Jetpack Boost defers the main bundle, so it can land
+   after the old vt-loading class was already removed; with a transition on the
+   base body rule that late paint animated white→dark — the returning flash. */
+html.vt-theme-anim body { transition: background var(--ease), color var(--ease); }
 
 img  { max-width: 100%; height: auto; display: block; }
 a    { color: inherit; text-decoration: none; }

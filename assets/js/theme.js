@@ -37,6 +37,8 @@
 
     if (toggle) {
         toggle.addEventListener('click', function () {
+            // Enable the body fade only now, on deliberate toggle — never on load.
+            html.classList.add('vt-theme-anim');
             var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             applyTheme(next);
             try { localStorage.setItem('vt-theme', next); } catch(e) {}
