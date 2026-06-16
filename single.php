@@ -55,6 +55,8 @@ $share_title  = rawurlencode(get_the_title());
 <!-- ── Centre: article ───────────────────────────────────────── -->
 <div class="container">
 
+<?php vt_breadcrumbs(); ?>
+
 <article id="post-<?php the_ID(); ?>" <?php post_class('single-post'); ?>>
 
     <?php if (has_post_thumbnail()) : ?>

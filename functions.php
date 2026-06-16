@@ -256,6 +256,93 @@ function vt_body_classes(array $classes): array {
 add_filter('body_class', 'vt_body_classes');
 
 /* ----------------------------------------------------------------
+   Open Graph + Twitter Card meta tags
+   ---------------------------------------------------------------- */
+
+function vt_og_tags(): void {
+    // Bail if a dedicated SEO plugin or Jetpack is already providing OG tags
+    if ( defined( 'WPSEO_VERSION' ) || defined( 'RANK_MATH_VERSION' ) || function_exists( 'jetpack_og_tags' ) ) return;
+
+    $site_name = get_bloginfo( 'name' );
+    $image     = '';
+    $type      = 'website';
+
+    if ( is_singular() ) {
+        $post        = get_queried_object();
+        $title       = get_the_title( $post );
+        $description = wp_strip_all_tags( get_the_excerpt( $post ) ) ?: get_bloginfo( 'description' );
+        $url         = get_permalink( $post );
+        if ( is_singular( 'post' ) ) $type = 'article';
+
+        if ( has_post_thumbnail( $post ) ) {
+            $img = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'vt-hero' );
+            if ( $img ) $image = $img[0];
+        }
+    } else {
+        $title       = wp_get_document_title();
+        $description = get_bloginfo( 'description' );
+        $url         = is_home() || is_front_page() ? home_url( '/' ) : get_pagenum_link();
+    }
+
+    $description = mb_substr( wp_strip_all_tags( $description ), 0, 160 );
+
+    $x_url          = vt_get_mod( 'vt_social_x', 'https://x.com/vinuthomas' );
+    $twitter_handle = '';
+    if ( $x_url ) {
+        $path = trim( parse_url( $x_url, PHP_URL_PATH ) ?? '', '/' );
+        if ( $path && strpos( $path, '/' ) === false ) {
+            $twitter_handle = '@' . $path;
+        }
+    }
+
+    $out  = "\n";
+    $out .= '<meta property="og:type" content="'        . esc_attr( $type )        . '">' . "\n";
+    $out .= '<meta property="og:title" content="'       . esc_attr( $title )       . '">' . "\n";
+    $out .= '<meta property="og:description" content="' . esc_attr( $description ) . '">' . "\n";
+    $out .= '<meta property="og:url" content="'         . esc_url( $url )          . '">' . "\n";
+    $out .= '<meta property="og:site_name" content="'   . esc_attr( $site_name )   . '">' . "\n";
+    if ( $image ) {
+        $out .= '<meta property="og:image" content="'   . esc_url( $image )        . '">' . "\n";
+    }
+    $out .= '<meta name="twitter:card" content="summary_large_image">'                    . "\n";
+    $out .= '<meta name="twitter:title" content="'       . esc_attr( $title )       . '">' . "\n";
+    $out .= '<meta name="twitter:description" content="' . esc_attr( $description ) . '">' . "\n";
+    if ( $image ) {
+        $out .= '<meta name="twitter:image" content="'   . esc_url( $image )        . '">' . "\n";
+    }
+    if ( $twitter_handle ) {
+        $out .= '<meta name="twitter:creator" content="' . esc_attr( $twitter_handle ) . '">' . "\n";
+    }
+
+    echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+add_action( 'wp_head', 'vt_og_tags', 2 );
+
+/* ----------------------------------------------------------------
+   Canonical <link> tag
+   ---------------------------------------------------------------- */
+
+function vt_canonical(): void {
+    if ( defined('WPSEO_VERSION') || defined('RANK_MATH_VERSION') ) return;
+
+    // Prevent WP core's rel_canonical (singular-only) from duplicating ours.
+    remove_action('wp_head', 'rel_canonical');
+
+    if ( is_singular() ) {
+        $url = get_permalink();
+    } elseif ( is_home() || is_front_page() ) {
+        $url = home_url('/');
+    } else {
+        $url = get_pagenum_link();
+    }
+
+    if ( $url ) {
+        echo '<link rel="canonical" href="' . esc_url( $url ) . '">' . "\n";
+    }
+}
+add_action('wp_head', 'vt_canonical', 3);
+
+/* ----------------------------------------------------------------
    Article JSON-LD schema (AEO/GEO)
    ---------------------------------------------------------------- */
 
@@ -322,6 +409,147 @@ function vt_article_schema(): void {
         . "</script>\n";
 }
 add_action( 'wp_head', 'vt_article_schema' );
+
+/* ----------------------------------------------------------------
+   Person JSON-LD schema on the homepage
+   ---------------------------------------------------------------- */
+
+function vt_person_schema(): void {
+    if ( ! is_home() && ! is_front_page() ) return;
+
+    $users = get_users([ 'role' => 'administrator', 'number' => 1 ]);
+    if ( empty( $users ) ) return;
+    $user = $users[0];
+
+    $social_links = array_values( array_filter([
+        vt_get_mod('vt_social_x',          'https://x.com/vinuthomas'),
+        vt_get_mod('vt_social_linkedin',   'https://linkedin.com/in/vinuthomas'),
+        vt_get_mod('vt_social_mastodon',   'https://mastodon.online/@vinuthomas'),
+        vt_get_mod('vt_social_instagram',  'https://www.instagram.com/vinuthomas'),
+        vt_get_mod('vt_social_soundcloud', 'https://soundcloud.com/vinuthomas'),
+        vt_get_mod('vt_social_github',     ''),
+        vt_get_mod('vt_social_bluesky',    ''),
+        vt_get_mod('vt_social_youtube',    ''),
+    ]));
+
+    $schema = [
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Person',
+        'name'        => $user->display_name,
+        'url'         => home_url('/'),
+        'description' => $user->description ?: get_bloginfo('description'),
+    ];
+
+    if ( $social_links ) {
+        $schema['sameAs'] = $social_links;
+    }
+
+    echo '<script type="application/ld+json">'
+        . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG )
+        . "</script>\n";
+}
+add_action('wp_head', 'vt_person_schema');
+
+/* ----------------------------------------------------------------
+   Breadcrumbs
+   ---------------------------------------------------------------- */
+
+function vt_breadcrumbs(): void {
+    $items = [[ 'url' => home_url('/'), 'label' => __('Home', 'vt-folio') ]];
+
+    if ( is_singular('post') ) {
+        $cats = get_the_category();
+        if ( $cats ) {
+            $items[] = [ 'url' => get_category_link( $cats[0]->term_id ), 'label' => $cats[0]->name ];
+        }
+        $items[] = [ 'url' => '', 'label' => get_the_title() ];
+    } elseif ( is_singular() ) {
+        $items[] = [ 'url' => '', 'label' => get_the_title() ];
+    } elseif ( is_category() ) {
+        $items[] = [ 'url' => '', 'label' => single_cat_title('', false) ];
+    } elseif ( is_tag() ) {
+        $items[] = [ 'url' => '', 'label' => single_tag_title('', false) ];
+    } elseif ( is_author() ) {
+        $items[] = [ 'url' => '', 'label' => get_the_author() ];
+    } elseif ( is_year() ) {
+        $items[] = [ 'url' => '', 'label' => get_the_date('Y') ];
+    } elseif ( is_month() ) {
+        $items[] = [ 'url' => get_year_link( get_the_date('Y') ), 'label' => get_the_date('Y') ];
+        $items[] = [ 'url' => '', 'label' => get_the_date('F') ];
+    } elseif ( is_search() ) {
+        /* translators: %s: search term */
+        $items[] = [ 'url' => '', 'label' => sprintf( __('Search: %s', 'vt-folio'), get_search_query() ) ];
+    } else {
+        return;
+    }
+
+    if ( count($items) <= 1 ) return;
+
+    $last = count($items) - 1;
+    echo '<nav class="vt-breadcrumbs" aria-label="' . esc_attr__('Breadcrumb', 'vt-folio') . '">';
+    echo '<ol class="vt-breadcrumbs__list">';
+    foreach ( $items as $i => $item ) {
+        echo '<li class="vt-breadcrumbs__item">';
+        if ( $i === $last ) {
+            echo '<span aria-current="page">' . esc_html( $item['label'] ) . '</span>';
+        } else {
+            echo '<a href="' . esc_url( $item['url'] ) . '">' . esc_html( $item['label'] ) . '</a>';
+        }
+        echo '</li>';
+    }
+    echo '</ol></nav>';
+}
+
+/* ----------------------------------------------------------------
+   BreadcrumbList JSON-LD schema
+   ---------------------------------------------------------------- */
+
+function vt_breadcrumb_schema(): void {
+    if ( defined('WPSEO_VERSION') || defined('RANK_MATH_VERSION') ) return;
+
+    $items = [[ 'url' => home_url('/'), 'label' => __('Home', 'vt-folio') ]];
+
+    if ( is_singular('post') ) {
+        $cats = get_the_category();
+        if ( $cats ) {
+            $items[] = [ 'url' => get_category_link( $cats[0]->term_id ), 'label' => $cats[0]->name ];
+        }
+        $items[] = [ 'url' => get_permalink(), 'label' => get_the_title() ];
+    } elseif ( is_singular() ) {
+        $items[] = [ 'url' => get_permalink(), 'label' => get_the_title() ];
+    } elseif ( is_category() ) {
+        $items[] = [ 'url' => get_category_link( get_queried_object_id() ), 'label' => single_cat_title('', false) ];
+    } elseif ( is_tag() ) {
+        $items[] = [ 'url' => get_tag_link( get_queried_object_id() ), 'label' => single_tag_title('', false) ];
+    } elseif ( is_author() ) {
+        $items[] = [ 'url' => get_author_posts_url( get_queried_object_id() ), 'label' => get_the_author() ];
+    } else {
+        return;
+    }
+
+    if ( count($items) <= 1 ) return;
+
+    $list_items = [];
+    foreach ( $items as $pos => $item ) {
+        $list_items[] = [
+            '@type'    => 'ListItem',
+            'position' => $pos + 1,
+            'name'     => $item['label'],
+            'item'     => $item['url'],
+        ];
+    }
+
+    $schema = [
+        '@context'        => 'https://schema.org',
+        '@type'           => 'BreadcrumbList',
+        'itemListElement' => $list_items,
+    ];
+
+    echo '<script type="application/ld+json">'
+        . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG )
+        . "</script>\n";
+}
+add_action('wp_head', 'vt_breadcrumb_schema');
 
 /* ----------------------------------------------------------------
    Widget areas

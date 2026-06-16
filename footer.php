@@ -32,14 +32,15 @@
             <?php endif; ?>
 
             <?php
-            $vt_url_x          = vt_get_mod('vt_social_x',          '');
-            $vt_url_linkedin   = vt_get_mod('vt_social_linkedin',   '');
-            $vt_url_instagram  = vt_get_mod('vt_social_instagram',  '');
-            $vt_url_soundcloud = vt_get_mod('vt_social_soundcloud', '');
-            $vt_url_mastodon   = vt_get_mod('vt_social_mastodon',   '');
-            $vt_has_social     = $vt_url_x || $vt_url_linkedin || $vt_url_instagram || $vt_url_soundcloud || $vt_url_mastodon;
+            $vt_url_x          = vt_get_mod('vt_social_x',          'https://x.com/vinuthomas');
+            $vt_url_linkedin   = vt_get_mod('vt_social_linkedin',   'https://linkedin.com/in/vinuthomas');
+            $vt_url_instagram  = vt_get_mod('vt_social_instagram',  'https://www.instagram.com/vinuthomas');
+            $vt_url_soundcloud = vt_get_mod('vt_social_soundcloud', 'https://soundcloud.com/vinuthomas');
+            $vt_url_mastodon   = vt_get_mod('vt_social_mastodon',   'https://mastodon.online/@vinuthomas');
+            $vt_url_youtube    = vt_get_mod('vt_social_youtube',    '');
+            $vt_url_github     = vt_get_mod('vt_social_github',     '');
+            $vt_url_bluesky    = vt_get_mod('vt_social_bluesky',    '');
             ?>
-            <?php if ($vt_has_social) : ?>
             <div class="footer-social">
                 <?php if ($vt_url_x) : ?>
                 <a href="<?php echo esc_url($vt_url_x); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e('X / Twitter (opens in new tab)', 'vt-folio'); ?>">
@@ -76,8 +77,33 @@
                     </svg>
                 </a>
                 <?php endif; ?>
+                <?php if ($vt_url_youtube) : ?>
+                <a href="<?php echo esc_url($vt_url_youtube); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e('YouTube (opens in new tab)', 'vt-folio'); ?>">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
+                <?php endif; ?>
+                <?php if ($vt_url_github) : ?>
+                <a href="<?php echo esc_url($vt_url_github); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e('GitHub (opens in new tab)', 'vt-folio'); ?>">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                </a>
+                <?php endif; ?>
+                <?php if ($vt_url_bluesky) : ?>
+                <a href="<?php echo esc_url($vt_url_bluesky); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e('Bluesky (opens in new tab)', 'vt-folio'); ?>">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 568 501" fill="currentColor" width="16" height="16">
+                        <path d="M123.121 33.664C188.971 82.553 258.7 181.68 284 234.873c25.3-53.192 95.028-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.763 79.748C507.295 323.689 528.034 395.054 468.889 462c-100.199 102.94-143.946-25.801-154.824-58.464-1.967-5.78-2.879-8.766-2.879-8.766.014 2.568.014 2.568 0 5.126.014 2.558.014 2.558 0 5.126-.879-3.062-1.867-6.07-2.88-8.766-10.878 32.663-54.625 161.404-154.824 58.464C94.966 395.054 115.705 323.689 230.641 304.25c-65.608 11.185-139.488-7.295-159.763-79.748C64.945 203.66 55 75.293 55 57.947 55-28.906 131.134-1.611 123.121 33.664z"/>
+                    </svg>
+                </a>
+                <?php endif; ?>
+                <a href="<?php echo esc_url(get_feed_link()); ?>" aria-label="<?php esc_attr_e('RSS feed', 'vt-folio'); ?>">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                        <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
+                    </svg>
+                </a>
             </div>
-            <?php endif; ?>
 
             <p class="footer-copy">
                 &copy; <?php echo esc_html(gmdate('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>.

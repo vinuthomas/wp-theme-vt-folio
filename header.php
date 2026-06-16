@@ -20,7 +20,8 @@
 <script>
 (function(){try{var s=localStorage.getItem('vt-font-size');if(s)document.documentElement.classList.add('vt-font-'+s);}catch(e){}})();
 </script>
-<?php $vt_mastodon_url = vt_get_mod('vt_social_mastodon', ''); ?>
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<?php $vt_mastodon_url = vt_get_mod('vt_social_mastodon', 'https://mastodon.online/@vinuthomas'); ?>
 <?php if ($vt_mastodon_url) : ?><link rel="me" href="<?php echo esc_url($vt_mastodon_url); ?>"><?php endif; ?>
 <?php
 /*

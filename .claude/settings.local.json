@@ -51,7 +51,10 @@
       "Bash(cp -r /Users/vinuthomas/code/wordpress_theme /tmp/vinu-thomas)",
       "Bash(rm -f /tmp/vinu-thomas/CLAUDE.md)",
       "Bash(rm -rf /tmp/vinu-thomas/.claude /tmp/vinu-thomas/.git /tmp/vinu-thomas/security-reports)",
-      "Bash(zip -r ~/Desktop/vinu-thomas-theme.zip vinu-thomas --exclude \"*/.DS_Store\")"
+      "Bash(zip -r ~/Desktop/vinu-thomas-theme.zip vinu-thomas --exclude \"*/.DS_Store\")",
+      "Bash(git *)",
+      "Bash(grep -oP '\\(?<=<script[^>]*>\\)\\\\{\"@context\":\"https://schema.org\",\"@type\":\"Person\"[^<]*' /tmp/vt-home2.html)",
+      "Bash(rm -rf /tmp/vinu-thomas)"
     ]
   }
 }

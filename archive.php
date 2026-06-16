@@ -2,6 +2,8 @@
 
 <div class="container">
 
+    <?php vt_breadcrumbs(); ?>
+
     <header class="archive-header">
         <span class="archive-header__label" aria-hidden="true">
             <?php

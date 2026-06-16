@@ -4,7 +4,7 @@ Theme URI: https://vinuthomas.com
 Author: Vinu Thomas
 Author URI: https://vinuthomas.com
 Description: Clean personal blog theme — masonry card grid, light/dark mode, Gutenberg support.
-Version: 1.8.12
+Version: 1.8.13
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
@@ -799,6 +799,11 @@ p:last-child { margin-bottom: 0; }
 .entry-content h3,
 .entry-content h4 { margin-top: 2.5rem; margin-bottom: 0.75rem; color: var(--text-primary); }
 
+/* Offset anchor targets by the sticky header height so headings don't hide under the nav. */
+.entry-content h2[id],
+.entry-content h3[id],
+.entry-content h4[id] { scroll-margin-top: calc(var(--header-height) + 1.5rem); }
+
 .entry-content a {
   color: var(--accent-text);
   text-decoration: underline;
@@ -1148,6 +1153,44 @@ p:last-child { margin-bottom: 0; }
   #commentform { grid-template-columns: 1fr; }
   #commentform .comment-form-author,
   #commentform .comment-form-email { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   BREADCRUMBS
+   ============================================================ */
+
+.vt-breadcrumbs {
+  margin-bottom: 1.25rem;
+}
+
+.vt-breadcrumbs__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.vt-breadcrumbs__item + .vt-breadcrumbs__item::before {
+  content: '/';
+  margin-right: 0.25rem;
+  color: var(--border);
+}
+
+.vt-breadcrumbs__item a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--ease);
+}
+
+.vt-breadcrumbs__item a:hover { color: var(--accent-text); }
+
+.vt-breadcrumbs__item span[aria-current] {
+  color: var(--text-secondary);
 }
 
 /* ============================================================
@@ -1747,15 +1790,20 @@ p:last-child { margin-bottom: 0; }
   /* ── Sidebar (right column) ── */
   .single-sidebar {
     display: block;
+    /* Stretch to article height so the sticky TOC can travel the full article.
+       Without this, the containing block ends at the last widget, causing the
+       TOC to unstick and scroll off-screen early on long posts. */
+    align-self: stretch;
   }
 
-  /* Only the TOC sticks — not the whole sidebar.
-     Making the whole sidebar sticky clips bottom widgets on short viewports. */
+  /* Only the TOC sticks — not the whole sidebar. */
   #vt-toc {
     position: sticky;
     top: calc(var(--header-height) + 2.5rem);
     z-index: 1;
     background: var(--bg-secondary);
+    /* Use full available viewport height so long TOCs aren't needlessly clipped. */
+    max-height: calc(100vh - var(--header-height) - 5rem);
   }
 
   /* ── Full-width layout (gallery posts) — no sidebar or share bar ── */

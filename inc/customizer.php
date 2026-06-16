@@ -354,6 +354,9 @@ function vt_customizer(WP_Customize_Manager $wp_customize): void {
         'vt_social_instagram'  => ['label' => __('Instagram URL',   'vt-folio'),  'default' => 'https://www.instagram.com/vinuthomas'],
         'vt_social_soundcloud' => ['label' => __('SoundCloud URL',  'vt-folio'),  'default' => 'https://soundcloud.com/vinuthomas'],
         'vt_social_mastodon'   => ['label' => __('Mastodon URL',    'vt-folio'),  'default' => 'https://mastodon.online/@vinuthomas'],
+        'vt_social_youtube'    => ['label' => __('YouTube URL',     'vt-folio'),  'default' => ''],
+        'vt_social_github'     => ['label' => __('GitHub URL',      'vt-folio'),  'default' => ''],
+        'vt_social_bluesky'    => ['label' => __('Bluesky URL',     'vt-folio'),  'default' => ''],
     ];
 
     foreach ($vt_social_fields as $id => $config) {
