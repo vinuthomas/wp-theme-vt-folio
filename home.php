@@ -2,7 +2,7 @@
 
 <div class="container">
 
-    <h1 class="screen-reader-text"><?php bloginfo('name'); ?></h1>
+    <h1 class="screen-reader-text"><?php echo esc_html( get_bloginfo('name') ); ?></h1>
 
     <?php if (have_posts()) : ?>
 

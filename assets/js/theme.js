@@ -205,6 +205,14 @@
                 closeMenu();
             }
         });
+
+        // Close menu when focus moves outside of the menu and toggle
+        document.addEventListener('focusin', function (e) {
+            if (menuToggle.getAttribute('aria-expanded') === 'true' &&
+                !menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                closeMenu();
+            }
+        });
     }
 
 
@@ -302,6 +310,31 @@
     lbEl.addEventListener('click', function (e) {
         if (e.target === lbEl) { lbClose(); }
     });
+
+    // Trap focus inside lightbox when it is open (Tab / Shift+Tab cycle)
+    lbEl.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var focusable = Array.prototype.slice.call(
+            lbEl.querySelectorAll('button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+        ).filter(function (el) {
+            return !el.hidden && el.offsetParent !== null;
+        });
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    });
+
     document.addEventListener('keydown', function (e) {
         if (!lbEl.classList.contains('is-open')) { return; }
         if (e.key === 'Escape')     { lbClose(); }

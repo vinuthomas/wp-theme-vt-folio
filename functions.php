@@ -47,12 +47,19 @@ add_action('after_setup_theme', 'vt_setup');
 function vt_enqueue(): void {
     $ver = wp_get_theme()->get('Version');
 
-    // Include the logo font only on pages that actually render it
-    // (About page template and 404) to avoid a wasted font fetch everywhere else.
+    $h = vt_get_mod('vt_font_heading', 'Playfair Display');
+    $b = vt_get_mod('vt_font_body',    'Inter');
+    $l = vt_get_mod('vt_font_logo',    'Dancing Script');
     $include_logo = is_404() || is_page_template('page-about.php');
-    wp_enqueue_style('vt-fonts', vt_google_fonts_url( $include_logo ), [], null);
 
-    wp_enqueue_style('vt-style', get_stylesheet_uri(), ['vt-fonts'], $ver);
+    $deps = [];
+    // Only load external google fonts stylesheet if non-default fonts are chosen
+    if ($h !== 'Playfair Display' || $b !== 'Inter' || ($include_logo && $l !== 'Dancing Script')) {
+        wp_enqueue_style('vt-fonts', vt_google_fonts_url( $include_logo ), [], null);
+        $deps[] = 'vt-fonts';
+    }
+
+    wp_enqueue_style('vt-style', get_stylesheet_uri(), $deps, $ver);
 
     wp_enqueue_script('vt-theme', get_template_directory_uri() . '/assets/js/theme.js', [], $ver, true);
 
@@ -94,8 +101,11 @@ add_filter('should_load_separate_core_block_assets', '__return_true');
  * the HTML parse, saving ~300–500 ms on a cold first load.
  */
 add_action('wp_head', function (): void {
-    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
-    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    // Only print preconnect tags if the external google fonts stylesheet is enqueued
+    if ( wp_style_is('vt-fonts', 'enqueued') ) {
+        echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+        echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    }
 }, 1); // priority 1 — fires before wp_enqueue_scripts outputs the <link> tags
 
 /**

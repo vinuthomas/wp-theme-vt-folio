@@ -94,15 +94,15 @@ function vt_lighten_hex(string $hex, float $amount): string {
    ---------------------------------------------------------------- */
 
 function vt_custom_css(): void {
-    $accent     = vt_get_mod('vt_accent',              '#c8853a');
-    $bg         = vt_get_mod('vt_bg',                  '#ffffff');
-    $bg2        = vt_get_mod('vt_bg_secondary',        '#f7f6f4');
-    $text1      = vt_get_mod('vt_text_primary',        '#1a1a1a');
-    $text2      = vt_get_mod('vt_text_secondary',      '#555555');
-    $dark_bg    = vt_get_mod('vt_dark_bg',             '#111111');
-    $dark_bg2   = vt_get_mod('vt_dark_bg_secondary',   '#1c1c1c');
-    $dark_text1 = vt_get_mod('vt_dark_text_primary',   '#f0ece6');
-    $dark_text2 = vt_get_mod('vt_dark_text_secondary', '#b0a898');
+    $accent     = sanitize_hex_color(vt_get_mod('vt_accent',              '#c8853a')) ?: '#c8853a';
+    $bg         = sanitize_hex_color(vt_get_mod('vt_bg',                  '#ffffff')) ?: '#ffffff';
+    $bg2        = sanitize_hex_color(vt_get_mod('vt_bg_secondary',        '#f7f6f4')) ?: '#f7f6f4';
+    $text1      = sanitize_hex_color(vt_get_mod('vt_text_primary',        '#1a1a1a')) ?: '#1a1a1a';
+    $text2      = sanitize_hex_color(vt_get_mod('vt_text_secondary',      '#555555')) ?: '#555555';
+    $dark_bg    = sanitize_hex_color(vt_get_mod('vt_dark_bg',             '#111111')) ?: '#111111';
+    $dark_bg2   = sanitize_hex_color(vt_get_mod('vt_dark_bg_secondary',   '#1c1c1c')) ?: '#1c1c1c';
+    $dark_text1 = sanitize_hex_color(vt_get_mod('vt_dark_text_primary',   '#f0ece6')) ?: '#f0ece6';
+    $dark_text2 = sanitize_hex_color(vt_get_mod('vt_dark_text_secondary', '#b0a898')) ?: '#b0a898';
 
     [$r, $g, $b]  = vt_hex_to_rgb($accent);
     $accent_hover = vt_darken_hex($accent, 0.17);
@@ -113,9 +113,13 @@ function vt_custom_css(): void {
     $h_name  = vt_get_mod('vt_font_heading', 'Playfair Display');
     $b_name  = vt_get_mod('vt_font_body',    'Inter');
     $l_name  = vt_get_mod('vt_font_logo',    'Dancing Script');
-    $h_stack = VT_HEADING_FONTS[$h_name]['stack'] ?? 'Georgia, serif';
-    $b_stack = VT_BODY_FONTS[$b_name]['stack']    ?? 'sans-serif';
-    $l_stack = VT_LOGO_FONTS[$l_name]['stack']    ?? 'cursive';
+
+    $h_stack = VT_HEADING_FONTS[$h_name]['stack'] ?? null;
+    if (!$h_stack) { $h_name = 'Playfair Display'; $h_stack = 'Georgia, serif'; }
+    $b_stack = VT_BODY_FONTS[$b_name]['stack'] ?? null;
+    if (!$b_stack) { $b_name = 'Inter'; $b_stack = 'sans-serif'; }
+    $l_stack = VT_LOGO_FONTS[$l_name]['stack'] ?? null;
+    if (!$l_stack) { $l_name = 'Dancing Script'; $l_stack = 'cursive'; }
 
     $css  = ":root{";
     $css .= "--accent:{$accent};";
