@@ -6,6 +6,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.1] — 2026-11-19
+
+### Fixed
+- The parent label and its chevron now form one submenu button. Page links remain available inside the dropdown.
+
 ## [1.9.0] — 2026-11-19
 
 ### Added
