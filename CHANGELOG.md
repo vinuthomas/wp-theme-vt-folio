@@ -6,6 +6,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.0] — 2026-11-19
+
+### Added
+- Primary navigation supports one level of nested links. Submenu buttons work with keyboard and touch. Escape closes an open submenu and returns focus to its button.
+
 ## [1.6.0] — 2026-05-31
 
 ### Added
