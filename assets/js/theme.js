@@ -163,7 +163,67 @@
     /* ── Mobile menu ────────────────────────────────────────────── */
 
     var menuToggle = document.getElementById('menu-toggle');
-    var navMenu    = document.querySelector('.nav-menu');
+    var navMenu    = document.getElementById('primary-menu');
+    var activeSubmenu;
+
+    function closeSubmenu() {
+        if (!activeSubmenu) { return; }
+        activeSubmenu.button.setAttribute('aria-expanded', 'false');
+        activeSubmenu.list.hidden = true;
+        activeSubmenu = null;
+    }
+
+    if (navMenu) {
+        var submenuLabel = navMenu.closest('.site-nav').dataset.submenuLabel;
+
+        Array.from(navMenu.children).forEach(function (item, index) {
+            var link = item.querySelector(':scope > a');
+            var list = item.querySelector(':scope > .sub-menu');
+            if (!link || !list) { return; }
+
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'submenu-toggle';
+            list.id = navMenu.id + '-submenu-' + (index + 1);
+            button.setAttribute('aria-controls', list.id);
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', submenuLabel.replace('%s', function () {
+                return link.textContent.trim();
+            }));
+            list.hidden = true;
+            item.classList.add('has-submenu');
+            item.insertBefore(button, list);
+
+            button.addEventListener('click', function () {
+                var wasOpen = activeSubmenu && activeSubmenu.button === button;
+                closeSubmenu();
+                if (!wasOpen) {
+                    list.hidden = false;
+                    button.setAttribute('aria-expanded', 'true');
+                    activeSubmenu = { item: item, button: button, list: list };
+                }
+            });
+        });
+
+        navMenu.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && activeSubmenu) {
+                var button = activeSubmenu.button;
+                closeSubmenu();
+                e.preventDefault();
+                e.stopPropagation();
+                button.focus();
+            }
+        });
+
+        function closeSubmenuOutside(e) {
+            if (activeSubmenu && !activeSubmenu.item.contains(e.target)) {
+                closeSubmenu();
+            }
+        }
+
+        document.addEventListener('click', closeSubmenuOutside);
+        document.addEventListener('focusin', closeSubmenuOutside);
+    }
 
     function openMenu() {
         menuToggle.setAttribute('aria-expanded', 'true');
@@ -175,6 +235,7 @@
     }
 
     function closeMenu() {
+        closeSubmenu();
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.setAttribute('aria-label', 'Open menu');
         navMenu.classList.remove('is-open');
