@@ -6,6 +6,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.9.1] — 2026-11-25
+
+### Fixed
+- Restore the optional Image title header post template and compatibility with existing selections.
+
 ## [1.9.0] — 2026-11-19
 
 ### Added

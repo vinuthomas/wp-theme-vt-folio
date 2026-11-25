@@ -1,4 +1,9 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Template Name: Image title header
+ * Template Post Type: post
+ */
+get_header(); ?>
 
 <?php while (have_posts()) : the_post(); ?>
 
@@ -59,7 +64,27 @@ $share_title  = rawurlencode(get_the_title());
 
 <article id="post-<?php the_ID(); ?>" <?php post_class('single-post'); ?>>
 
-    <?php if (has_post_thumbnail()) : ?>
+    <?php if (get_page_template_slug(get_the_ID()) === 'single.php' && has_post_thumbnail()) : ?>
+    <header class="vt-image-title-header">
+        <h1 class="screen-reader-text"><?php echo esc_html(get_the_title()); ?></h1>
+        <?php the_post_thumbnail('full', [
+            'loading'       => 'eager',
+            'fetchpriority' => 'high',
+            'alt'           => '',
+            'sizes'         => '(max-width: 767px) calc(100vw - 2.5rem), (max-width: 1379px) calc(100vw - 4rem), 1000px',
+        ]); ?>
+        <?php if ($vt_show_date || $vt_show_rt) : ?>
+        <div class="single-post__meta">
+            <?php if ($vt_show_date) : ?>
+            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('F j, Y')); ?></time>
+            <?php endif; ?>
+            <?php if ($vt_show_rt) : ?>
+            <span><?php echo esc_html(vt_reading_time()); ?></span>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+    </header>
+    <?php elseif (has_post_thumbnail()) : ?>
     <div class="single-post__hero">
         <?php the_post_thumbnail('vt-hero', [
             'loading' => 'eager',

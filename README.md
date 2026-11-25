@@ -153,3 +153,7 @@ add_filter('vt_consent_default_eu', '__return_true');
 ## About page
 
 Create a WordPress page and assign it the **"About"** page template (`page-about.php`). The featured image becomes the left-column portrait.
+
+## Image title header
+
+For a post with title artwork as its featured image, choose **Post → Template → Image title header** in the editor. The complete image appears without a title overlay and the text title remains available to screen readers. Date and reading time follow the image according to the Post Display settings. Posts without a featured image use the regular text header. Other posts keep their existing layout.
