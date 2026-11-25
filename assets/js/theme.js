@@ -174,8 +174,6 @@
     }
 
     if (navMenu) {
-        var submenuLabel = navMenu.closest('.site-nav').dataset.submenuLabel;
-
         Array.from(navMenu.children).forEach(function (item, index) {
             var link = item.querySelector(':scope > a');
             var list = item.querySelector(':scope > .sub-menu');
@@ -187,12 +185,10 @@
             list.id = navMenu.id + '-submenu-' + (index + 1);
             button.setAttribute('aria-controls', list.id);
             button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('aria-label', submenuLabel.replace('%s', function () {
-                return link.textContent.trim();
-            }));
+            button.textContent = link.textContent.trim();
             list.hidden = true;
             item.classList.add('has-submenu');
-            item.insertBefore(button, list);
+            link.replaceWith(button);
 
             button.addEventListener('click', function () {
                 var wasOpen = activeSubmenu && activeSubmenu.button === button;
@@ -230,8 +226,8 @@
         menuToggle.setAttribute('aria-label', 'Close menu');
         navMenu.classList.add('is-open');
         // Move focus to the first menu item for keyboard users
-        var firstLink = navMenu.querySelector('a');
-        if (firstLink) { firstLink.focus(); }
+        var firstItem = navMenu.querySelector('a, .submenu-toggle');
+        if (firstItem) { firstItem.focus(); }
     }
 
     function closeMenu() {

@@ -65,8 +65,7 @@ endif;
                 <span class="site-logo__text" aria-hidden="true"><?php echo esc_html(vt_get_mod('vt_logo_text', 'Vinu Thomas')); ?></span>
             </a>
 
-            <nav class="site-nav" data-submenu-label="<?php esc_attr_e('Toggle submenu for %s', 'vt-folio'); ?>"
-                 role="navigation" aria-label="<?php esc_attr_e('Primary navigation', 'vt-folio'); ?>">
+            <nav class="site-nav" role="navigation" aria-label="<?php esc_attr_e('Primary navigation', 'vt-folio'); ?>">
                 <?php
                 wp_nav_menu([
                     'theme_location' => 'primary',
